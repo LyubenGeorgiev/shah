@@ -1,0 +1,16 @@
+paths:
+    /:
+        get:
+            consumes:
+                - application/json
+            operationId: hello
+            produces:
+                - application/json
+            responses:
+                "200":
+                    $ref: '#/responses/HelloResponse'
+            summary: helloHandler responds with a "Hello, World!" message.
+responses:
+    HelloResponse:
+        description: ""
+swagger: "2.0"
