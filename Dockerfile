@@ -8,13 +8,13 @@ WORKDIR /app
 COPY . .
 
 # Install templ inside the container
-RUN go install github.com/a-h/templ/cmd/templ@latest
+# RUN go install github.com/a-h/templ/cmd/templ@latest
 
 # Run templ to generate Go files
 # RUN templ generate -path="./view"
 
 # Build the Go application
-RUN go build -o main cmd/shah/main.go
+RUN go build -o main cmd/shah/main.go && chmod +x main
 
 # Expose the port your application runs on
 EXPOSE 8080

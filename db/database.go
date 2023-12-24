@@ -13,13 +13,21 @@ import (
 
 var db *gorm.DB
 
+func getenv(key, fallback string) string {
+	value := os.Getenv(key)
+	if len(value) == 0 {
+		return fallback
+	}
+	return value
+}
+
 func SetupDatabase() {
 	// Fetch environment variables
-	host := os.Getenv("DATABASE_HOST")
-	portStr := os.Getenv("POSTGRES_PORT")
-	user := os.Getenv("POSTGRES_USER")
-	password := os.Getenv("POSTGRES_PASSWORD")
-	dbname := os.Getenv("POSTGRES_DB")
+	host := getenv("DATABASE_HOST", "localhost")
+	portStr := getenv("POSTGRES_PORT", "5432")
+	user := getenv("POSTGRES_USER", "root")
+	password := getenv("POSTGRES_PASSWORD", "root")
+	dbname := getenv("POSTGRES_DB", "postgres")
 
 	// Convert port string to integer
 	port, err := strconv.Atoi(portStr)
