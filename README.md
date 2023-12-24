@@ -1,0 +1,1 @@
+docker exec -it shah-postgres-db psql -U root -d postgres

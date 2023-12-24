@@ -13,5 +13,5 @@ type Game struct {
 }
 
 func (Game) TableName() string {
-	return "Shah.games"
+	return "games"
 }
