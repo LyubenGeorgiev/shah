@@ -1,12 +1,12 @@
-package main
+package shah
 
 import (
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"shah/model"
-   
+
+	"github.com/LyubenGeorgiev/shah/db"
 )
 
 // swagger:response HelloResponse
@@ -36,13 +36,9 @@ func helloHandler(rw http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-
-	model.SetupDatabase()
+	db.SetupDatabase()
 	http.HandleFunc("/", helloHandler)
 
 	fmt.Println("Server is running on http://localhost:8081")
 	log.Fatal(http.ListenAndServe(":8081", nil))
-
-
-  
 }
