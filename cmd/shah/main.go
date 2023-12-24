@@ -36,7 +36,7 @@ func helloHandler(rw http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	db.SetupDatabase()
+	db.InitPostgresStorage()
 	http.HandleFunc("/", helloHandler)
 
 	fmt.Println("Server is running on http://localhost:8080")

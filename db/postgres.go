@@ -11,7 +11,9 @@ import (
 	"gorm.io/gorm"
 )
 
-var db *gorm.DB
+type PostgresStorage struct {
+	db *gorm.DB
+}
 
 func getenv(key, fallback string) string {
 	value := os.Getenv(key)
@@ -21,7 +23,7 @@ func getenv(key, fallback string) string {
 	return value
 }
 
-func SetupDatabase() {
+func InitPostgresStorage() *PostgresStorage {
 	// Fetch environment variables
 	host := getenv("DATABASE_HOST", "localhost")
 	portStr := getenv("POSTGRES_PORT", "5432")
@@ -37,7 +39,7 @@ func SetupDatabase() {
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=disable TimeZone=EET", host, user, password, dbname, port)
 
-	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -48,9 +50,7 @@ func SetupDatabase() {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Tables created successfully!")
-}
-
-func GetDB() *gorm.DB {
-	return db
+	return &PostgresStorage{
+		db: db,
+	}
 }
