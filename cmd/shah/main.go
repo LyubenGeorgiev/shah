@@ -1,4 +1,4 @@
-package shah
+package main
 
 import (
 	"encoding/json"
