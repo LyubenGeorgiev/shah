@@ -23,7 +23,7 @@ func getenv(key, fallback string) string {
 	return value
 }
 
-func InitPostgresStorage() *PostgresStorage {
+func NewPostgresStorage() *PostgresStorage {
 	// Fetch environment variables
 	host := getenv("DATABASE_HOST", "localhost")
 	portStr := getenv("POSTGRES_PORT", "5432")
