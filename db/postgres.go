@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/LyubenGeorgiev/shah/db/models"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -15,7 +16,7 @@ type PostgresStorage struct {
 	db *gorm.DB
 }
 
-func getenv(key, fallback string) string {
+func Getenv(key, fallback string) string {
 	value := os.Getenv(key)
 	if len(value) == 0 {
 		return fallback
@@ -25,11 +26,11 @@ func getenv(key, fallback string) string {
 
 func NewPostgresStorage() *PostgresStorage {
 	// Fetch environment variables
-	host := getenv("DATABASE_HOST", "localhost")
-	portStr := getenv("POSTGRES_PORT", "5432")
-	user := getenv("POSTGRES_USER", "root")
-	password := getenv("POSTGRES_PASSWORD", "root")
-	dbname := getenv("POSTGRES_DB", "postgres")
+	host := Getenv("DATABASE_HOST", "localhost")
+	portStr := Getenv("POSTGRES_PORT", "5432")
+	user := Getenv("POSTGRES_USER", "root")
+	password := Getenv("POSTGRES_PASSWORD", "root")
+	dbname := Getenv("POSTGRES_DB", "postgres")
 
 	// Convert port string to integer
 	port, err := strconv.Atoi(portStr)
@@ -57,4 +58,19 @@ func NewPostgresStorage() *PostgresStorage {
 
 func (ps *PostgresStorage) CreateUser(user *models.User) error {
 	return ps.db.Create(user).Error
+}
+
+func (ps *PostgresStorage) FindOneUser(email, password string) error {
+	user := &models.User{}
+
+	if err := ps.db.Where("email = ?", email).First(user).Error; err != nil {
+		return fmt.Errorf("Wrong email or password")
+	}
+
+	errf := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if errf != nil && errf == bcrypt.ErrMismatchedHashAndPassword { //Password does not match!
+		return fmt.Errorf("Wrong email or password")
+	}
+
+	return nil
 }

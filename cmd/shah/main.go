@@ -1,30 +1,21 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"log"
-	"net/http"
+	"os"
+	"os/signal"
 
-	"github.com/LyubenGeorgiev/shah/db"
-	"github.com/LyubenGeorgiev/shah/handlers"
-	"github.com/LyubenGeorgiev/shah/view/layout"
-	"github.com/gorilla/mux"
+	"github.com/LyubenGeorgiev/shah/application"
 )
 
 func main() {
-	ah := handlers.NewAuthHandler(db.NewPostgresStorage())
+	app := application.New()
 
-	r := mux.NewRouter().StrictSlash(true)
-	r.PathPrefix("/static/css/").Handler(http.StripPrefix("/static/css/", http.FileServer(http.Dir("static/css"))))
-	r.PathPrefix("/static/images/").Handler(http.StripPrefix("/static/images/", http.FileServer(http.Dir("static/images"))))
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer cancel()
 
-	r.HandleFunc("/register", ah.RegistrationFrom).Methods("GET")
-	r.HandleFunc("/register", ah.Register).Methods("POST")
-
-	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		layout.Base("Shah.com - Play Chess Online").Render(r.Context(), w)
-	}).Methods("GET")
-
-	fmt.Println("Server is running on http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", r))
+	if err := app.Start(ctx); err != nil {
+		fmt.Println("Failed to start app:", err)
+	}
 }

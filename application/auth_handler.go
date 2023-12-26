@@ -1,11 +1,11 @@
-package handlers
+package application
 
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
-	"github.com/LyubenGeorgiev/shah/db"
 	"github.com/LyubenGeorgiev/shah/db/models"
 	"github.com/LyubenGeorgiev/shah/view/registration"
 
@@ -20,21 +20,11 @@ type error interface {
 	Error() string
 }
 
-type AuthHandler struct {
-	Storage db.Storage
-}
-
-func NewAuthHandler(storage db.Storage) *AuthHandler {
-	return &AuthHandler{
-		Storage: storage,
-	}
-}
-
-func (h *AuthHandler) RegistrationFrom(w http.ResponseWriter, r *http.Request) {
+func (a *App) RegistrationFrom(w http.ResponseWriter, r *http.Request) {
 	registration.Register().Render(r.Context(), w)
 }
 
-func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
+func (a *App) Register(w http.ResponseWriter, r *http.Request) {
 	user := &models.User{}
 	err := json.NewDecoder(r.Body).Decode(user)
 	if err != nil {
@@ -60,7 +50,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 
 	user.Password = string(pass)
 
-	if err := h.Storage.CreateUser(user); err != nil {
+	if err := a.Storage.CreateUser(user); err != nil {
 		fmt.Println(err)
 		err := ErrorResponse{
 			Err: "Storing registration in database failed",
@@ -69,4 +59,23 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
+}
+
+func (a *App) Login(w http.ResponseWriter, r *http.Request) {
+	user := &models.User{}
+	err := json.NewDecoder(r.Body).Decode(user)
+	if err != nil {
+		log.Println("Decoding body failed during login:", err)
+		http.Error(w, "Decoding body failed during login", http.StatusBadRequest)
+
+		return
+	}
+
+	if err = a.Storage.FindOneUser(user.Email, user.Password); err != nil {
+		log.Println("Error during login:", err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+
+		return
+	}
+
 }
