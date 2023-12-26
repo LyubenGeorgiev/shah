@@ -1,0 +1,23 @@
+package layout
+
+import (
+
+)
+
+templ Base(title string) {
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <title>{ title }</title>
+    <link rel="icon" href="/static/images/icon.svg" type="image/svg+xml"/>
+    <script src="https://unpkg.com/htmx.org@1.9.9"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
+    <link rel="stylesheet" href="/static/css/base.css"/>
+  </head>
+  <body>
+    <nav></nav>
+    <div id="contents">
+    </div>
+  </body>
+  </html>
+}
