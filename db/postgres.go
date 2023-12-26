@@ -45,7 +45,7 @@ func NewPostgresStorage() *PostgresStorage {
 	}
 
 	// AutoMigrate will create tables based on provided structs
-	err = db.AutoMigrate(&models.Game{}, &models.Tournament{})
+	err = db.AutoMigrate(&models.Game{}, &models.Tournament{}, &models.User{})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -53,4 +53,8 @@ func NewPostgresStorage() *PostgresStorage {
 	return &PostgresStorage{
 		db: db,
 	}
+}
+
+func (ps *PostgresStorage) CreateUser(user *models.User) error {
+	return ps.db.Create(user).Error
 }
