@@ -1,23 +1,30 @@
 package layout
 
 import (
-
+  "github.com/LyubenGeorgiev/shah/view/nav"
 )
 
-templ Base(title string) {
+templ layout(title string) {
   <!DOCTYPE html>
   <html>
-  <head>
-    <title>{ title }</title>
-    <link rel="icon" href="/static/images/icon.svg" type="image/svg+xml"/>
-    <script src="https://unpkg.com/htmx.org@1.9.9"></script>
-    <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
-    <link rel="stylesheet" href="/static/css/base.css"/>
-  </head>
-  <body>
-    <nav></nav>
-    <div id="contents">
-    </div>
-  </body>
+    <head>
+      <title>{ title }</title>
+      <link rel="icon" href="/static/images/icon.svg" type="image/svg+xml"/>
+      <script src="https://unpkg.com/htmx.org@1.9.9"></script>
+      <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
+      <link rel="stylesheet" href="/static/css/base.css"/>
+    </head>
+    <body>
+      @nav.Template()
+      <main>
+        { children... }
+      </main>
+    </body>
   </html>
+}
+
+templ Home() {
+	@layout("Shah.com - Play Chess Online") {
+		<div data-testid="homeTemplate">Welcome to my website.</div>
+	}
 }

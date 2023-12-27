@@ -1,0 +1,104 @@
+/* Reset default styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+  
+/* Apply some basic styles for the header */
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 20px 0;
+}
+  
+/* Center the content within a container */
+.container {
+    width: 80%;
+    margin: 0 auto;
+}
+  
+/* Style the logo */
+.logo img {
+    width: 100px; /* Adjust the size of the logo */
+    height: auto;
+    margin-left: 10%;
+}
+  
+/* Style the navigation sidebar */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200px; /* Adjust the width of the sidebar */
+    height: 100%; /* Full height of the viewport */
+    background-color: #333;
+    padding-top: 20px; /* Adjust the top padding to accommodate the logo */
+}
+  
+/* Style the navigation menu items */
+.sidebar ul {
+    list-style: none;
+}
+  
+.sidebar ul li {
+    margin-bottom: 10px;
+}
+  
+.sidebar ul li a {
+    display: block;
+    color: #fff;
+    text-decoration: none;
+    padding: 10px;
+    position: relative;
+}
+  
+/* Hover effect for navigation items */
+.sidebar ul li a:hover {
+    background-color: #c40808; /* Change to your desired hover color */
+}
+  
+/* Style the submenu */
+.submenu {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 100%; /* Position the submenu to the right of the parent item */
+    background-color: #868686; /* Lighter color for the submenu */
+    border: 1px solid #000000; /* Add an outline */
+    width: 200px; /* Same width as the sidebar */
+    padding: 20px; /* Adjust padding to match the sidebar */
+    height: 100%;
+}
+  
+.sidebar ul li:hover .submenu {
+    display: block;
+}
+
+/* Your existing styles for header, sidebar, etc. */
+
+/* Apply flexbox to layout the main content */
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Make the body fill the viewport height */
+}
+
+.mainContent {
+    display: flex;
+    flex: 1; /* Take up remaining vertical space */
+}
+
+/* Style the mainBoard (canvas) */
+.mainBoard {
+    flex: 1; /* Take up all available space */
+    border: 1px solid #d31515; /* Example border style */
+    margin-top: 20px; /* Adjust margin as needed */
+}
+
+/* Style the canvas element within the mainBoard div */
+.mainBoard canvas {
+    width: 100%; /* Make the canvas fill the div */
+    height: 100%; /* Make the canvas fill the div */
+    background-color: rgb(46, 53, 55); /* Set the canvas background color */
+}

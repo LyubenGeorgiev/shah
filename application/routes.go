@@ -14,6 +14,6 @@ func (app *App) loadRoutes() {
 	app.router.HandleFunc("/register", app.Register).Methods("POST")
 
 	app.router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		layout.Base("Shah.com - Play Chess Online").Render(r.Context(), w)
+		layout.Home().Render(r.Context(), w)
 	}).Methods("GET")
 }
