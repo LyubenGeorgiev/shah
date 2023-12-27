@@ -4,7 +4,7 @@ import (
   "github.com/LyubenGeorgiev/shah/view/nav"
 )
 
-templ layout(title string) {
+templ Layout(title string) {
   <!DOCTYPE html>
   <html>
     <head>
@@ -34,7 +34,7 @@ templ layout(title string) {
 }
 
 templ Home() {
-	@layout("Shah.com - Play Chess Online") {
+	@Layout("Shah.com - Play Chess Online") {
 		<div data-testid="homeTemplate">Welcome to my website.</div>
 	}
 }

@@ -1,33 +1,21 @@
 package registration
 
 import (
-
+  "github.com/LyubenGeorgiev/shah/view/layout"
 )
 
 templ Register() {
-  <!DOCTYPE html>
-  <html>
-  <head>
-    <title>Register</title>
-    <script src="https://unpkg.com/htmx.org@1.9.9"></script>
-    <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
-    // <link rel="stylesheet" href="/static/css/base.css"/>
-  </head>
-  <body>
-    <nav></nav>
-    <div id="contents">
-      <form id="register_form"
-            hx-post="/register"
-            hx-ext="json-enc"
-            hx-trigger="click from:#regbut"
-            hx-indicator="#register-indicator">
-        <input class="inputs" type="text" name="username"/>
-        <input class="inputs" type="email" name="email" placeholder="example@gmail.com"/>
-        <input class="inputs" type="password" name="password"/>
-        <button id="regbut" type="button">Register</button>
-      </form>
-      <img id="register-indicator" class="htmx-indicator" src="https://raw.githubusercontent.com/n3r4zzurr0/svg-spinners/abfa05c49acf005b8b1e0ef8eb25a67a7057eb20/svg-css/90-ring.svg"/>
-    </div>
-  </body>
-  </html>
+  @layout.Layout("Register") {
+    <form id="register_form"
+          hx-post="/register"
+          hx-ext="json-enc"
+          hx-trigger="click from:#regbut"
+          hx-indicator="#register-indicator">
+      <input class="inputs" type="text" name="username"/>
+      <input class="inputs" type="email" name="email" placeholder="example@gmail.com"/>
+      <input class="inputs" type="password" name="password"/>
+      <button id="regbut" type="button">Register</button>
+    </form>
+    <img id="register-indicator" class="htmx-indicator" src="https://raw.githubusercontent.com/n3r4zzurr0/svg-spinners/abfa05c49acf005b8b1e0ef8eb25a67a7057eb20/svg-css/90-ring.svg"/>
+  }
 }
