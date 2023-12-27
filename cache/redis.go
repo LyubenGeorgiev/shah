@@ -2,6 +2,7 @@ package cache
 
 import (
 	"context"
+	"time"
 
 	"github.com/LyubenGeorgiev/shah/db"
 	"github.com/redis/go-redis/v9"
@@ -30,4 +31,15 @@ func (r Redis) HealthCheck(ctx context.Context) error {
 
 func (r Redis) Close() error {
 	return r.rdb.Close()
+}
+
+func (r Redis) Set(ctx context.Context, key string, value string, expiration time.Duration) error {
+	_, err := r.rdb.Set(ctx, key, value, expiration).Result()
+
+	return err
+}
+
+func (r Redis) Exists(ctx context.Context, key string, value string) bool {
+	val, err := r.rdb.Get(ctx, key).Result()
+	return err == nil && val == value
 }

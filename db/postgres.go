@@ -60,17 +60,17 @@ func (ps *PostgresStorage) CreateUser(user *models.User) error {
 	return ps.db.Create(user).Error
 }
 
-func (ps *PostgresStorage) FindOneUser(email, password string) error {
+func (ps *PostgresStorage) FindOneUser(email, password string) (uint, error) {
 	user := &models.User{}
 
 	if err := ps.db.Where("email = ?", email).First(user).Error; err != nil {
-		return fmt.Errorf("Wrong email or password")
+		return 0, fmt.Errorf("Wrong email or password")
 	}
 
 	errf := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if errf != nil && errf == bcrypt.ErrMismatchedHashAndPassword { //Password does not match!
-		return fmt.Errorf("Wrong email or password")
+		return 0, fmt.Errorf("Wrong email or password")
 	}
 
-	return nil
+	return user.ID, nil
 }
