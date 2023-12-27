@@ -10,15 +10,25 @@ templ layout(title string) {
     <head>
       <title>{ title }</title>
       <link rel="icon" href="/static/images/icon.svg" type="image/svg+xml"/>
+      <meta charset="UTF-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <script src="https://cdn.tailwindcss.com"></script>
       <script src="https://unpkg.com/htmx.org@1.9.9"></script>
       <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
       <link rel="stylesheet" href="/static/css/base.css"/>
     </head>
-    <body>
-      @nav.Template()
-      <main>
-        { children... }
-      </main>
+
+    <body class="bg-gray-100">
+      <div class="flex h-screen bg-gray-200">
+        // Sidebar
+        @nav.Template()
+        // Main Content
+        <div class="flex-1">
+          <div class="p-8">
+              { children... }
+          </div>
+        </div>
+      </div>
     </body>
   </html>
 }

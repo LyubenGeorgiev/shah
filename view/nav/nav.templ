@@ -1,10 +1,16 @@
 package nav
 
+import (
+  "github.com/LyubenGeorgiev/shah/view/components"
+)
+
 templ navbarElement(href, imageSrc, imageAlt, title string) {
   <li>
-    <a href={ templ.SafeURL(href) }>
-      <img src={ imageSrc } alt={ imageAlt }/>
-      <h1>{ title }</h1>
+    <a href={ templ.SafeURL(href) } class="p-2 block text-gray-300 hover:text-white text-center">
+      <div class="flex items-center">
+        @components.Image(imageSrc, imageAlt, "h-8 w-8")
+        <h1 class="text-base">{ title }</h1>
+      </div>
     </a>
     { children... }
   </li>
@@ -13,35 +19,14 @@ templ navbarElement(href, imageSrc, imageAlt, title string) {
 templ Template() {
   <nav class="sidebar">
     <ul>
-      @navbarElement("link", "image link", "image alt", "title") {
+      @navbarElement("/", "static/images/icon.svg", "Home", "Shah")
+      @navbarElement("/play", "static/images/play.svg", "Play image", "Play") {
         <ul class="submenu">
-          <li><a href="#">Submenu 1</a></li>
-          <li><a href="#">Submenu 2</a></li>
-          <!-- Add more submenu items as needed -->
+          @navbarElement("/play/online", "static/images/play.svg", "Play image", "Play")
+          @navbarElement("/play/computer", "static/images/computer.svg", "Computer image", "Computer")
+          @navbarElement("/play/tournaments", "static/images/tournaments.png", "Medal image", "Tournaments")
         </ul>
       }
-      <li><a href="#">About</a>
-        <ul class="submenu">
-          <li><a href="#">Submenu 1</a></li>
-          <li><a href="#">Submenu 2</a></li>
-          <!-- Add more submenu items as needed -->
-        </ul>
-      </li>
-      <li><a href="#">Services</a>
-        <ul class="submenu">
-          <li><a href="#">Submenu 1</a></li>
-          <li><a href="#">Submenu 2</a></li>
-          <!-- Add more submenu items as needed -->
-        </ul>
-      </li>
-      <li><a href="#">Contact</a>
-        <ul class="submenu">
-          <li><a href="#">Submenu 1</a></li>
-          <li><a href="#">Submenu 2</a></li>
-          <!-- Add more submenu items as needed -->
-        </ul>
-      </li>
-      <!-- Add more navigation items as needed -->
     </ul>
   </nav>
 }

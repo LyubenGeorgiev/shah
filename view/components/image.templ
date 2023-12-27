@@ -1,0 +1,9 @@
+package components
+
+import (
+    "strings"
+)
+
+templ Image(src, alt string, clases... string) {
+    <img src={ src } alt={ alt } class={ strings.Join(clases, " ") } />
+}
