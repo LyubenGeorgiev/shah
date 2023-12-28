@@ -24,6 +24,11 @@ type error interface {
 	Error() string
 }
 
+const (
+	auth_duration      = 24 * time.Hour
+	half_auth_duration = 12 * time.Hour
+)
+
 func (a *App) RegistrationFrom(w http.ResponseWriter, r *http.Request) {
 	registration.Register().Render(r.Context(), w)
 }
@@ -33,10 +38,7 @@ func (a *App) Register(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(user)
 	if err != nil {
 		fmt.Println(err)
-		err := ErrorResponse{
-			Err: "Decoding body failed during registration",
-		}
-		json.NewEncoder(w).Encode(err)
+		http.Error(w, "Decoding body failed during registration", http.StatusInternalServerError)
 
 		return
 	}
@@ -44,10 +46,7 @@ func (a *App) Register(w http.ResponseWriter, r *http.Request) {
 	pass, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		fmt.Println(err)
-		err := ErrorResponse{
-			Err: "Password Encryption failed",
-		}
-		json.NewEncoder(w).Encode(err)
+		http.Error(w, "Password Encryption failed", http.StatusInternalServerError)
 
 		return
 	}
@@ -56,15 +55,12 @@ func (a *App) Register(w http.ResponseWriter, r *http.Request) {
 
 	if err := a.Storage.CreateUser(user); err != nil {
 		fmt.Println(err)
-		err := ErrorResponse{
-			Err: "Storing registration in database failed",
-		}
-		json.NewEncoder(w).Encode(err)
+		http.Error(w, "Saving registration failed", http.StatusInternalServerError)
 
 		return
 	}
 
-	w.Header().Set("HX-Redirect", "/login")
+	w.Header().Set("HX-Location", "/login")
 }
 
 func (a *App) LoginFrom(w http.ResponseWriter, r *http.Request) {
@@ -93,11 +89,9 @@ func (a *App) Login(w http.ResponseWriter, r *http.Request) {
 	token := uuid.New().String()
 	redisKey := fmt.Sprintf("auth:%d", id)
 
-	duration := 24 * time.Hour
-	expiration := time.Now().Add(duration) // Adjust the expiration time as needed
+	expiration := time.Now().Add(auth_duration) // Adjust the expiration time as needed
 
-	fmt.Println("Set", redisKey, token)
-	err = a.Cache.Set(r.Context(), redisKey, token, duration)
+	err = a.Cache.Set(r.Context(), redisKey, token, auth_duration)
 	if err != nil {
 		http.Error(w, "Error storing auth token", http.StatusInternalServerError)
 		return
@@ -113,7 +107,6 @@ func (a *App) Login(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "user_id",
 		Value:    fmt.Sprint(id),
-		Expires:  expiration,
 		HttpOnly: true,
 		Path:     "/",
 	})
@@ -143,6 +136,23 @@ func (a *App) authMiddleware(next http.Handler) http.Handler {
 		if !a.Cache.Exists(r.Context(), redisKey, authToken) {
 			next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), "authenticated", false)))
 			return
+		}
+
+		// Extend user authentication
+		if cookieAuth.Expires.Sub(time.Now()) < half_auth_duration {
+			err = a.Cache.Set(r.Context(), redisKey, authToken, auth_duration)
+			if err != nil {
+				http.Error(w, "Error storing auth token", http.StatusInternalServerError)
+				return
+			}
+
+			http.SetCookie(w, &http.Cookie{
+				Name:     "auth_token",
+				Value:    authToken,
+				Expires:  time.Now().Add(auth_duration),
+				HttpOnly: true,
+				Path:     "/",
+			})
 		}
 
 		next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), "authenticated", true)))
