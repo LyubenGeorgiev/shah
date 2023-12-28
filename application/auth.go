@@ -16,14 +16,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type ErrorResponse struct {
-	Err string
-}
-
-type error interface {
-	Error() string
-}
-
 const (
 	auth_duration      = 24 * time.Hour
 	half_auth_duration = 12 * time.Hour
