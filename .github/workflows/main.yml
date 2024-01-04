@@ -3,7 +3,10 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - devops  # Adjust branch name as needed
+      - devops
+  pull_request:
+    branches:
+      - main
 
 jobs:
   gosec:
@@ -17,3 +20,13 @@ jobs:
         uses: securego/gosec@master
         with:
           args: ./...
+
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
