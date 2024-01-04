@@ -22,7 +22,10 @@ const (
 )
 
 func (a *App) RegistrationFrom(w http.ResponseWriter, r *http.Request) {
-	registration.Register().Render(r.Context(), w)
+	err := registration.Register().Render(r.Context(), w)
+	if err != nil {
+		fmt.Printf("Error rendering at registration form page: %v", err)
+	}
 }
 
 func (a *App) Register(w http.ResponseWriter, r *http.Request) {
@@ -56,7 +59,10 @@ func (a *App) Register(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) LoginFrom(w http.ResponseWriter, r *http.Request) {
-	login.Login().Render(r.Context(), w)
+	err := login.Login().Render(r.Context(), w)
+	if err != nil {
+		fmt.Printf("Error rendering at login form page: %v", err)
+	}
 }
 
 func (a *App) Login(w http.ResponseWriter, r *http.Request) {

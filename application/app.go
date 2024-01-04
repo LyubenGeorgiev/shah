@@ -30,8 +30,9 @@ func New() *App {
 
 func (a *App) Start(ctx context.Context) error {
 	server := &http.Server{
-		Addr:    ":8080",
-		Handler: a.router,
+		Addr:              ":8080",
+		Handler:           a.router,
+		ReadHeaderTimeout: 3 * time.Second,
 	}
 
 	err := a.Cache.HealthCheck(ctx)

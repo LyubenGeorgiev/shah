@@ -26,6 +26,9 @@ func (app *App) loadRoutes() {
 	app.router.Handle("/protected", app.requiredAuthMiddleware(http.HandlerFunc(protectedHandler)))
 
 	app.router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		layout.Home().Render(r.Context(), w)
+		err := layout.Home().Render(r.Context(), w)
+		if err != nil {
+			fmt.Printf("Error rendering at home page: %v", err)
+		}
 	}).Methods("GET")
 }
