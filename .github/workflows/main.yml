@@ -82,3 +82,19 @@ jobs:
     - name: Push to DockerHub
       run: |
         docker push lyubengeorgiev/shah:latest
+
+  trigger-infra:
+    needs:
+      [build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.PAT_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: 'LyubenGeorgiev',
+              repo: 'shah-infra',
+              workflow_id: 'deploy.yml',
+              ref: 'main'
+            })
