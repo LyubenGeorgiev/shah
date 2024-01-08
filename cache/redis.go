@@ -15,12 +15,10 @@ type Redis struct {
 func NewRedisCache() *Redis {
 	host := db.Getenv("REDIS_HOST", "localhost")
 	port := db.Getenv("REDIS_PORT", "6379")
-	pass := db.Getenv("REDIS_PASSWORD", "eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81")
 
 	return &Redis{
 		rdb: redis.NewClient(&redis.Options{
-			Addr:     host + ":" + port,
-			Password: pass,
+			Addr: host + ":" + port,
 		}),
 	}
 }
