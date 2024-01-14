@@ -16,6 +16,18 @@ const (
 
 // Convert ASCII character pieces to encoded constants
 var charToPiece = [...]piece{'P': P, 'N': N, 'B': B, 'R': R, 'Q': Q, 'K': K, 'p': p, 'n': n, 'b': b, 'r': r, 'q': q, 'k': k}
+var pieceToChar = [...]byte{P: 'P', N: 'N', B: 'B', R: 'R', Q: 'Q', K: 'K', p: 'p', n: 'n', b: 'b', r: 'r', q: 'q', k: 'k', no_piece: ' '}
+
+var castlingRights = [...]castle{
+	7, 15, 15, 15, 3, 15, 15, 11,
+	15, 15, 15, 15, 3, 15, 15, 15,
+	15, 15, 15, 15, 3, 15, 15, 15,
+	15, 15, 15, 15, 3, 15, 15, 15,
+	15, 15, 15, 15, 3, 15, 15, 15,
+	15, 15, 15, 15, 3, 15, 15, 15,
+	15, 15, 15, 15, 3, 15, 15, 15,
+	13, 15, 15, 15, 12, 15, 15, 14,
+}
 
 // bishop relevant occupancy bit count for every square on board
 var bishop_relevant_bits = [64]int{

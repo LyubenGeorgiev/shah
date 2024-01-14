@@ -224,7 +224,7 @@ func (b *Board) isEmpty(square square) bool {
 }
 
 // generate all moves
-func (board Board) generate_moves() {
+func (board Board) generateMoves(moves *Moves) {
 	// define source & target squares
 	var source_square, target_square square
 
@@ -247,17 +247,18 @@ func (board Board) generate_moves() {
 			if !(target_square < a8) && board.isEmpty(target_square) {
 				// pawn promotion
 				if source_square >= a7 && source_square <= h7 {
-					// printf("pawn promotion: %s%sq\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
-					// printf("pawn promotion: %s%sr\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
-					// printf("pawn promotion: %s%sb\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
-					// printf("pawn promotion: %s%sn\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
+					moves.addMove(encode_move(source_square, target_square, P, Q, 0, 0, 0, 0))
+					moves.addMove(encode_move(source_square, target_square, P, R, 0, 0, 0, 0))
+					moves.addMove(encode_move(source_square, target_square, P, B, 0, 0, 0, 0))
+					moves.addMove(encode_move(source_square, target_square, P, N, 0, 0, 0, 0))
 				} else {
 					// one square ahead pawn move
-					// printf("pawn push: %s%s\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
+					moves.addMove(encode_move(source_square, target_square, P, no_piece, 0, 0, 0, 0))
 
 					// two squares ahead pawn move
-					// if ((source_square >= a2 && source_square <= h2) && !get_bit(occupancies[both], target_square - 8))
-					//     printf("double pawn push: %s%s\n", square_to_coordinates[source_square], square_to_coordinates[target_square - 8]);
+					if (source_square >= a2 && source_square <= h2) && !board.occupancies[both].getBit(target_square-8) {
+						moves.addMove(encode_move(source_square, target_square-8, P, no_piece, 0, 1, 0, 0))
+					}
 				}
 			}
 
@@ -268,13 +269,13 @@ func (board Board) generate_moves() {
 
 				// pawn promotion
 				if source_square >= a7 && source_square <= h7 {
-					// printf("pawn promotion capture: %s%sq\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
-					// printf("pawn promotion capture: %s%sr\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
-					// printf("pawn promotion capture: %s%sb\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
-					// printf("pawn promotion capture: %s%sn\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
+					moves.addMove(encode_move(source_square, target_square, P, Q, 1, 0, 0, 0))
+					moves.addMove(encode_move(source_square, target_square, P, R, 1, 0, 0, 0))
+					moves.addMove(encode_move(source_square, target_square, P, B, 1, 0, 0, 0))
+					moves.addMove(encode_move(source_square, target_square, P, N, 1, 0, 0, 0))
 				} else {
 					// one square ahead pawn move
-					// printf("pawn capture: %s%s\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
+					moves.addMove(encode_move(source_square, target_square, P, no_piece, 1, 0, 0, 0))
 				}
 			}
 
@@ -286,8 +287,8 @@ func (board Board) generate_moves() {
 				// make sure enpassant capture available
 				if enpassant_attacks > 0 {
 					// init enpassant capture target square
-					// target_enpassant := enpassant_attacks.getLs1bIndex()
-					// printf("pawn enpassant capture: %s%s\n", square_to_coordinates[source_square], square_to_coordinates[target_enpassant])
+					target_enpassant := square(enpassant_attacks.getLs1bIndex())
+					moves.addMove(encode_move(source_square, target_enpassant, P, no_piece, 1, 0, 1, 0))
 				}
 			}
 		}
@@ -301,7 +302,7 @@ func (board Board) generate_moves() {
 			if board.isEmpty(f1) && board.isEmpty(g1) {
 				// make sure king and the f1 squares are not under attacks
 				if !board.isBlackSquareAttacked(e1) && !board.isBlackSquareAttacked(f1) {
-					// printf("castling move: e1g1\n");
+					moves.addMove(encode_move(e1, g1, K, no_piece, 0, 0, 0, 1))
 				}
 			}
 		}
@@ -312,7 +313,7 @@ func (board Board) generate_moves() {
 			if board.isEmpty(d1) && board.isEmpty(c1) && board.isEmpty(b1) {
 				// make sure king and the d1 squares are not under attacks
 				if !board.isBlackSquareAttacked(e1) && !board.isBlackSquareAttacked(d1) {
-					// printf("castling move: e1c1\n");
+					moves.addMove(encode_move(e1, c1, K, no_piece, 0, 0, 0, 1))
 				}
 			}
 		}
@@ -332,21 +333,20 @@ func (board Board) generate_moves() {
 			if !(target_square > h1) && board.isEmpty(target_square) {
 				// pawn promotion
 				if source_square >= a2 && source_square <= h2 {
-					// printf("pawn promotion: %s%sq\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
-					// printf("pawn promotion: %s%sr\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
-					// printf("pawn promotion: %s%sb\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
-					// printf("pawn promotion: %s%sn\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
+					moves.addMove(encode_move(source_square, target_square, p, q, 0, 0, 0, 0))
+					moves.addMove(encode_move(source_square, target_square, p, r, 0, 0, 0, 0))
+					moves.addMove(encode_move(source_square, target_square, p, b, 0, 0, 0, 0))
+					moves.addMove(encode_move(source_square, target_square, p, n, 0, 0, 0, 0))
 				} else {
 					// one square ahead pawn move
-					// printf("pawn push: %s%s\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
+					moves.addMove(encode_move(source_square, target_square, p, no_piece, 0, 0, 0, 0))
 
 					// two squares ahead pawn move
-					// if ((source_square >= a7 && source_square <= h7) && !get_bit(occupancies[both], target_square + 8))
-					//     printf("double pawn push: %s%s\n", square_to_coordinates[source_square], square_to_coordinates[target_square + 8]);
+					if (source_square >= a7 && source_square <= h7) && !board.occupancies[both].getBit(target_square+8) {
+						moves.addMove(encode_move(source_square, target_square-8, p, no_piece, 0, 1, 0, 0))
+					}
 				}
 			}
-
-			// init pawn attacks bitboard
 
 			// generate pawn captures
 			for attacks = pawn_attacks[board.side][source_square] & board.occupancies[white]; attacks > 0; attacks.popBit(target_square) {
@@ -355,13 +355,13 @@ func (board Board) generate_moves() {
 
 				// pawn promotion
 				if source_square >= a2 && source_square <= h2 {
-					// printf("pawn promotion capture: %s%sq\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
-					// printf("pawn promotion capture: %s%sr\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
-					// printf("pawn promotion capture: %s%sb\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
-					// printf("pawn promotion capture: %s%sn\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
+					moves.addMove(encode_move(source_square, target_square, p, q, 1, 0, 0, 0))
+					moves.addMove(encode_move(source_square, target_square, p, r, 1, 0, 0, 0))
+					moves.addMove(encode_move(source_square, target_square, p, b, 1, 0, 0, 0))
+					moves.addMove(encode_move(source_square, target_square, p, n, 1, 0, 0, 0))
 				} else {
 					// one square ahead pawn move
-					// printf("pawn capture: %s%s\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
+					moves.addMove(encode_move(source_square, target_square, p, no_piece, 1, 0, 0, 0))
 				}
 			}
 
@@ -373,8 +373,8 @@ func (board Board) generate_moves() {
 				// make sure enpassant capture available
 				if enpassant_attacks > 0 {
 					// init enpassant capture target square
-					// target_enpassant := attacks.getLs1bIndex()
-					// printf("pawn enpassant capture: %s%s\n", square_to_coordinates[source_square], square_to_coordinates[target_enpassant])
+					target_enpassant := square(enpassant_attacks.getLs1bIndex())
+					moves.addMove(encode_move(source_square, target_enpassant, p, no_piece, 1, 0, 1, 0))
 				}
 			}
 		}
@@ -388,7 +388,7 @@ func (board Board) generate_moves() {
 			if board.isEmpty(f8) && board.isEmpty(g8) {
 				// make sure king and the f8 squares are not under attacks
 				if !board.isWhiteSquareAttacked(e8) && !board.isWhiteSquareAttacked(f8) {
-					// printf("castling move: e8g8\n");
+					moves.addMove(encode_move(e8, g8, k, no_piece, 0, 0, 0, 1))
 				}
 			}
 		}
@@ -399,24 +399,25 @@ func (board Board) generate_moves() {
 			if board.isEmpty(d8) && board.isEmpty(c8) && board.isEmpty(b8) {
 				// make sure king and the d8 squares are not under attacks
 				if !board.isWhiteSquareAttacked(e8) && !board.isWhiteSquareAttacked(d8) {
-					// printf("castling move: e8c8\n");
+					moves.addMove(encode_move(e8, c8, k, no_piece, 0, 0, 0, 1))
 				}
 			}
 		}
 	}
 
-	// genarate knight moves
-	bitboard = board.bitboards[N]
+	// Init curPiece
+	curPiece := N
 	if board.side == black {
-		bitboard = board.bitboards[n]
+		curPiece = n
 	}
+
+	// genarate knight moves
+	bitboard = board.bitboards[curPiece]
 
 	// loop over source squares of piece bitboard copy
 	for ; bitboard > 0; bitboard.popBit(source_square) {
 		// init source square
 		source_square = square(bitboard.getLs1bIndex())
-
-		// init piece attacks in order to get set of target squares
 
 		// // loop over target squares available from generated attacks
 		for attacks = knight_attacks[source_square] & (^board.occupancies[board.side]); attacks > 0; attacks.popBit(target_square) {
@@ -425,18 +426,16 @@ func (board Board) generate_moves() {
 
 			// quiet move
 			if !board.occupancies[board.side.opposite()].getBit(target_square) {
-				// printf("%s%s  piece quiet move\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
+				moves.addMove(encode_move(source_square, target_square, curPiece, no_piece, 0, 0, 0, 0))
 			} else { // capture move
-				// printf("%s%s  piece capture\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
+				moves.addMove(encode_move(source_square, target_square, curPiece, no_piece, 1, 0, 0, 0))
 			}
 		}
 	}
 
 	// generate bishop moves
-	bitboard = board.bitboards[B]
-	if board.side == black {
-		bitboard = board.bitboards[b]
-	}
+	curPiece++
+	bitboard = board.bitboards[curPiece]
 
 	// loop over source squares of piece bitboard copy
 	for ; bitboard > 0; bitboard.popBit(source_square) {
@@ -450,18 +449,16 @@ func (board Board) generate_moves() {
 
 			// quiet move
 			if !board.occupancies[board.side.opposite()].getBit(target_square) {
-				// printf("%s%s  piece quiet move\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
+				moves.addMove(encode_move(source_square, target_square, curPiece, no_piece, 0, 0, 0, 0))
 			} else { // capture move
-				// printf("%s%s  piece capture\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
+				moves.addMove(encode_move(source_square, target_square, curPiece, no_piece, 1, 0, 0, 0))
 			}
 		}
 	}
 
 	// generate rook moves
-	bitboard = board.bitboards[R]
-	if board.side == black {
-		bitboard = board.bitboards[r]
-	}
+	curPiece++
+	bitboard = board.bitboards[curPiece]
 
 	// loop over source squares of piece bitboard copy
 	for ; bitboard > 0; bitboard.popBit(source_square) {
@@ -475,18 +472,16 @@ func (board Board) generate_moves() {
 
 			// quiet move
 			if !board.occupancies[board.side.opposite()].getBit(target_square) {
-				// printf("%s%s  piece quiet move\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
+				moves.addMove(encode_move(source_square, target_square, curPiece, no_piece, 0, 0, 0, 0))
 			} else { // capture move
-				// printf("%s%s  piece capture\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
+				moves.addMove(encode_move(source_square, target_square, curPiece, no_piece, 1, 0, 0, 0))
 			}
 		}
 	}
 
 	// generate queen moves
-	bitboard = board.bitboards[Q]
-	if board.side == black {
-		bitboard = board.bitboards[q]
-	}
+	curPiece++
+	bitboard = board.bitboards[curPiece]
 
 	// loop over source squares of piece bitboard copy
 	for ; bitboard > 0; bitboard.popBit(source_square) {
@@ -500,18 +495,16 @@ func (board Board) generate_moves() {
 
 			// quiet move
 			if !board.occupancies[board.side.opposite()].getBit(target_square) {
-				// printf("%s%s  piece quiet move\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
+				moves.addMove(encode_move(source_square, target_square, curPiece, no_piece, 0, 0, 0, 0))
 			} else { // capture move
-				// printf("%s%s  piece capture\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
+				moves.addMove(encode_move(source_square, target_square, curPiece, no_piece, 1, 0, 0, 0))
 			}
 		}
 	}
 
 	// genarate king moves
-	bitboard = board.bitboards[K]
-	if board.side == black {
-		bitboard = board.bitboards[k]
-	}
+	curPiece++
+	bitboard = board.bitboards[curPiece]
 
 	// loop over source squares of piece bitboard copy
 	for ; bitboard > 0; bitboard.popBit(source_square) {
@@ -527,10 +520,119 @@ func (board Board) generate_moves() {
 
 			// quiet move
 			if !board.occupancies[board.side.opposite()].getBit(target_square) {
-				// printf("%s%s  piece quiet move\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
+				moves.addMove(encode_move(source_square, target_square, curPiece, no_piece, 0, 0, 0, 0))
 			} else { // capture move
-				// printf("%s%s  piece capture\n", square_to_coordinates[source_square], square_to_coordinates[target_square]);
+				moves.addMove(encode_move(source_square, target_square, curPiece, no_piece, 1, 0, 0, 0))
 			}
 		}
 	}
+}
+
+// generate all moves
+func (board *Board) makeMove(move Move, capturesOnly bool) bool {
+
+	if !capturesOnly { // All moves
+		// Save the board
+		boardCopy := *board
+
+		// Parse move
+		sourceSquare := move.getSource()
+		targrtSquare := move.getTarget()
+		curPiece := move.getPiece()
+		promotionPiece := move.getPromotionPiece()
+		capture := move.isCapture()
+		double := move.isDoublePawnPush()
+		enpassant := move.isEnpassant()
+		castling := move.isCastling()
+
+		// Move piece
+		board.bitboards[curPiece].popBit(sourceSquare)
+		board.bitboards[curPiece].setBit(targrtSquare)
+
+		// Handling capture moves
+		if capture {
+			startPiece, endPiece := P, K
+			if board.side == white {
+				startPiece, endPiece = p, k
+			}
+
+			for bb_piece := startPiece; bb_piece <= endPiece; bb_piece++ {
+				board.bitboards[bb_piece].popBit(targrtSquare)
+			}
+		}
+
+		// Handling pawn promotions
+		if promotionPiece != no_piece {
+			board.bitboards[curPiece].popBit(targrtSquare)
+			board.bitboards[promotionPiece].setBit(targrtSquare)
+		}
+
+		// Handling enpassant captures
+		if enpassant {
+			if board.side == white {
+				board.bitboards[p].popBit(targrtSquare + 8)
+			} else {
+				board.bitboards[P].popBit(targrtSquare - 8)
+			}
+		}
+
+		// Reset enpassant square
+		board.enpassant = no_sq
+
+		// Handle double pawn push
+		if double {
+			if board.side == white {
+				board.enpassant = targrtSquare + 8
+			} else {
+				board.enpassant = targrtSquare - 8
+			}
+		}
+
+		// Handle castling
+		if castling {
+			switch targrtSquare {
+			case g1:
+				board.bitboards[R].popBit(h1)
+				board.bitboards[R].setBit(f1)
+			case c1:
+				board.bitboards[R].popBit(a1)
+				board.bitboards[R].setBit(d1)
+			case g8:
+				board.bitboards[r].popBit(h8)
+				board.bitboards[r].setBit(f8)
+			case c8:
+				board.bitboards[r].popBit(a8)
+				board.bitboards[r].setBit(d8)
+			}
+		}
+
+		// Update castling rights
+		board.castle &= castlingRights[sourceSquare]
+		board.castle &= castlingRights[targrtSquare]
+
+		// Update occupancies
+		board.occupancies[white] = board.bitboards[P] | board.bitboards[N] | board.bitboards[B] | board.bitboards[R] | board.bitboards[Q] | board.bitboards[K]
+		board.occupancies[black] = board.bitboards[p] | board.bitboards[n] | board.bitboards[b] | board.bitboards[r] | board.bitboards[q] | board.bitboards[k]
+		board.occupancies[both] = board.occupancies[white] | board.occupancies[black]
+
+		king := k
+		if board.side == white {
+			king = K
+		}
+		// change side
+		board.side = board.side.opposite()
+
+		// Make sure king is not in check
+		if board.isSquareAttacked(square(board.bitboards[king].getLs1bIndex()), board.side) {
+			*board = boardCopy
+
+			return false
+		}
+
+		return true
+	} else if move.isCapture() { // Capture moves only
+		return board.makeMove(move, false)
+	}
+
+	return false
 }

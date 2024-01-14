@@ -46,4 +46,12 @@ func (m Move) isCastling() bool {
 	return m>>23&1 > 0
 }
 
-type Moves [256]Move
+type Moves struct {
+	moves [256]Move
+	count int
+}
+
+func (m *Moves) addMove(move Move) {
+	m.moves[m.count] = move
+	m.count++
+}
