@@ -16,6 +16,62 @@ templ navbarElement(href, imageSrc, imageAlt, title string) {
   </li>
 }
 
+templ button(href, title string) {
+
+  <style type="text/css">
+	/* Styles for the specific button */
+/* Styles for the specific button */
+/* Styles for the specific button */
+.custom-button {
+  text-decoration: none;
+  display: inline-block;
+  padding: 10px;
+  border: 2px solid #2d3748;
+  border-radius: 8px;
+  transition: background-color 0.3s, color 0.1s;
+  margin-bottom: 10px;
+  margin-top: 30%;
+  color: #4a5568;
+  background-color: #a0aec0;
+}
+
+/* Hover state styles */
+.custom-button:hover {
+  color: #fff;
+  background-color: #2d3748;
+}
+
+/* Center text within the button */
+.custom-button .text-center {
+  text-align: center;
+}
+
+/* Additional styles for the nested elements */
+.custom-button .test {
+  margin-bottom: 5px;
+}
+
+.custom-button h1 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #2d3748;
+}
+
+
+
+
+	</style>
+ 
+   <a href={ templ.SafeURL(href) } class="custom-button p-2 block text-gray-300 hover:text-white text-center">
+  <div class="test">
+    <h1 class="text-base">{ title }</h1>
+  </div>
+</a>
+    
+  
+}
+
+
 templ Template() {
   <nav class="sidebar">
     <ul>
@@ -28,5 +84,18 @@ templ Template() {
         </ul>
       }
     </ul>
+    if ctx.Value("authenticated").(bool){
+
+    
+	    @navbarElement("/profile", "static/images/profile.jpg", "Profile image", "Profile")
+      {
+        
+      }
+
+
+    }else{
+         @button("/login" , "Login")
+         @button("/register" , "Register")
+    }
   </nav>
 }
