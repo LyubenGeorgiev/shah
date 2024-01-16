@@ -343,7 +343,7 @@ func (board Board) generateMoves(moves *Moves) {
 
 					// two squares ahead pawn move
 					if (source_square >= a7 && source_square <= h7) && !board.occupancies[both].getBit(target_square+8) {
-						moves.addMove(encode_move(source_square, target_square-8, p, no_piece, 0, 1, 0, 0))
+						moves.addMove(encode_move(source_square, target_square+8, p, no_piece, 0, 1, 0, 0))
 					}
 				}
 			}
