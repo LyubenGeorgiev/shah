@@ -1,14 +1,14 @@
 package chess
 
-type side int
+type Side int
 
 const (
-	white side = iota
+	white Side = iota
 	black
 	both
 )
 
-func (s side) opposite() side {
+func (s Side) opposite() Side {
 	switch s {
 	case white:
 		return black

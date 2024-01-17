@@ -1,0 +1,66 @@
+package components
+
+import (
+	"github.com/LyubenGeorgiev/shah/view/components/models"
+)
+
+var squareToString = [...]string{
+	"a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8",
+	"a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",
+	"a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6",
+	"a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5",
+	"a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4",
+	"a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3",
+	"a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2",
+	"a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",
+}
+
+func getBackground(square int) string {
+	if (square / 8 + square % 8) % 2 == 0 {
+		return "bg-yellow-100"
+	}
+
+	return "bg-green-500"
+}
+
+templ Square(piece string, square int, active bool) {
+	<div id={ squareToString[square] } 
+		if active {
+			hx-trigger="click" ws-send class={ "cursor-pointer", getBackground(square) }
+		} else {
+			class={ getBackground(square) }
+		}
+	>
+		@Image("/static/images/" + piece + ".png", "/static/images/" + piece + ".png")
+	</div>
+}
+
+templ BoardWhiteView(bs *models.BoardState) {
+	for rank := 0; rank < 8; rank++ {
+		<div class="flex">
+			for file := 0; file < 8; file++ {
+				@Square(bs.Pieces[rank*8 + file], rank*8 + file, bs.Side == models.White)
+			}
+		</div>
+	}
+}
+
+templ BoardBlackView(bs *models.BoardState) {
+	for rank := 7; rank >= 0; rank-- {
+		<div class="flex">
+			for file := 7; file >= 0; file-- {
+				@Square(bs.Pieces[rank*8 + file], rank*8 + file, bs.Side == models.Black)
+			}
+		</div>
+	}
+}
+
+templ Board(bs *models.BoardState) {
+	<div hx-ext="ws" ws-connect="/game" hx-swap-oob="outerHTML">
+		if bs.View == models.White {
+			@BoardWhiteView(bs)
+		} else {
+			@BoardBlackView(bs)
+		}
+	</div>
+}

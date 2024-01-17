@@ -2,6 +2,8 @@ package layout
 
 import (
   "github.com/LyubenGeorgiev/shah/view/nav"
+  "github.com/LyubenGeorgiev/shah/view/components"
+  "github.com/LyubenGeorgiev/shah/view/components/models"
 )
 
 templ Layout(title string) {
@@ -15,6 +17,7 @@ templ Layout(title string) {
       <script src="https://cdn.tailwindcss.com"></script>
       <script src="https://unpkg.com/htmx.org@1.9.9"></script>
       <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
+      <script src="https://unpkg.com/htmx.org/dist/ext/ws.js"></script>
       <link rel="stylesheet" href="/static/css/base.css"/>
     </head>
 
@@ -36,5 +39,11 @@ templ Layout(title string) {
 templ Home() {
 	@Layout("Shah.com - Play Chess Online") {
 		<div data-testid="homeTemplate">Welcome to my website.</div>
+	}
+}
+
+templ BoardTest(bs *models.BoardState) {
+	@Layout("Shah.com - Play Chess Online") {
+		@components.Board(bs)
 	}
 }

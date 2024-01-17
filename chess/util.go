@@ -376,7 +376,7 @@ var bishop_attacks [64][512]Bitboard
 var rook_attacks [64][4096]Bitboard
 
 // generate pawn attacks
-func mask_pawn_attacks(side side, square square) Bitboard {
+func mask_pawn_attacks(side Side, square square) Bitboard {
 	// result attacks bitboard
 	var attacks Bitboard = 0
 
@@ -638,7 +638,7 @@ func set_occupancy(index int, bits_in_mask int, attack_mask Bitboard) Bitboard {
 	// loop over the range of bits within attack mask
 	for count := 0; count < bits_in_mask; count++ {
 		// get LS1B index of attacks mask
-		square := square(attack_mask.getLs1bIndex())
+		square := square(attack_mask.GetLs1bIndex())
 
 		// pop LS1B in attack map
 		attack_mask.popBit(square)
@@ -717,11 +717,15 @@ func (b Bitboard) countBits() int {
 }
 
 // get least significant 1st bit index
-func (b Bitboard) getLs1bIndex() int {
+func (b Bitboard) GetLs1bIndex() int {
 	// make sure bitboard is not 0
 	if uint64(b) > 0 {
 		return bits.TrailingZeros64(uint64(b))
 	} else {
 		return -1
 	}
+}
+
+func (b *Bitboard) PopLs1b() {
+	b.popBit(square(b.GetLs1bIndex()))
 }
