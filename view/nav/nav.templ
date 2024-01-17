@@ -2,6 +2,7 @@ package nav
 
 import (
   "github.com/LyubenGeorgiev/shah/view/components"
+  "github.com/LyubenGeorgiev/shah/view/util"
 )
 
 templ navbarElement(href, imageSrc, imageAlt, title string) {
@@ -84,7 +85,7 @@ templ Template() {
         </ul>
       }
     </ul>
-    if v, ok := ctx.Value("authenticated").(bool); ok && v{
+    if util.IsAuthenticatedUser(ctx) {
 
     
 	    @navbarElement("/profile", "static/images/profile.jpg", "Profile image", "Profile")

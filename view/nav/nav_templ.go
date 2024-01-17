@@ -12,6 +12,7 @@ import "bytes"
 
 import (
 	"github.com/LyubenGeorgiev/shah/view/components"
+	"github.com/LyubenGeorgiev/shah/view/util"
 )
 
 func navbarElement(href, imageSrc, imageAlt, title string) templ.Component {
@@ -225,7 +226,7 @@ func Template() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if v, ok := ctx.Value("authenticated").(bool); ok && v {
+		if util.IsAuthenticatedUser(ctx) {
 			templ_7745c5c3_Err = navbarElement("/profile", "static/images/profile.jpg", "Profile image", "Profile").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
