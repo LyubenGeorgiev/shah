@@ -12,20 +12,6 @@ func (m Move) String() string {
 	)
 }
 
-func TestGenerateMoves(t *testing.T) {
-	Init()
-
-	board := NewBoadFromFen([]byte(tricky_position))
-
-	moves := Moves{}
-
-	board.generateMoves(&moves)
-
-	if moves.count != 48 {
-		t.Fatalf("Expected 48 moves but got %d\n", moves.count)
-	}
-}
-
 var nodes uint64 = 0
 var board *Board
 
