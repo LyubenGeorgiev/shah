@@ -11,7 +11,11 @@ type User struct {
 	Username   string `json:"username"`
 	Email      string `json:"email" gorm:"type:varchar(100);unique_index"`
 	Password   string `json:"password"`
+	Rating     float64 `json:"rating"`
+	GamesPlayed int    `json:"gamesPlayed"`
+	GamesWon    int    `json:"gamesWon"`
 }
+
 
 type Token struct {
 	UserID         uint
