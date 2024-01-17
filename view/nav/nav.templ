@@ -84,7 +84,7 @@ templ Template() {
         </ul>
       }
     </ul>
-    if ctx.Value("authenticated").(bool){
+    if v, ok := ctx.Value("authenticated").(bool); ok && v{
 
     
 	    @navbarElement("/profile", "static/images/profile.jpg", "Profile image", "Profile")
