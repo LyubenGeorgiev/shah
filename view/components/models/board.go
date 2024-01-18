@@ -8,7 +8,8 @@ const (
 )
 
 type BoardState struct {
-	Pieces [64]string
-	View   Side
-	Side   Side
+	Pieces   [64]string
+	Clicable [64]bool
+	View     Side
+	Side     Side
 }

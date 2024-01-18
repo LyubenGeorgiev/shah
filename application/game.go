@@ -21,6 +21,16 @@ func (a *App) Game(w http.ResponseWriter, r *http.Request) {
 			"P", "P", "P", "P", "P", "P", "P", "P",
 			"R", "N", "B", "Q", "K", "B", "N", "R",
 		},
+		Clicable: [...]bool{
+			false, false, false, false, false, false, false, false,
+			false, false, false, false, false, false, false, false,
+			false, false, false, false, false, false, false, false,
+			false, false, false, false, false, false, false, false,
+			false, false, false, false, false, false, false, false,
+			false, false, false, false, false, false, false, false,
+			true, true, true, true, true, true, true, true,
+			true, true, true, true, true, true, true, true,
+		},
 		View: models.White,
 		Side: models.White,
 	}).Render(r.Context(), w)

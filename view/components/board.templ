@@ -23,13 +23,26 @@ func getBackground(square int) string {
 	return "bg-green-500"
 }
 
+templ component(shouldBeUsed bool, attrs templ.Attributes) {
+  <p { attrs... }></p>
+  <hr
+    if shouldBeUsed {
+      { attrs... }
+    }
+  />
+}
+
+templ usage() {
+  @component(false, templ.Attributes{"data-testid": "paragraph"}) 
+}
+
 templ Square(piece string, square int, active bool) {
-	<div id={ squareToString[square] } 
-		if active {
-			hx-trigger="click" ws-send class={ "cursor-pointer", getBackground(square) }
-		} else {
-			class={ getBackground(square) }
-		}
+	<div { templ.Attributes{
+		"id": squareToString[square],
+		"hx-trigger": templ.KeyValue[string, bool]{Key: "click", Value: active},
+		"ws-send": active,
+	}... }
+		class={ getBackground(square), templ.KV("cursor-pointer", active) }
 	>
 		@Image("/static/images/" + piece + ".png", "/static/images/" + piece + ".png")
 	</div>
@@ -39,7 +52,7 @@ templ BoardWhiteView(bs *models.BoardState) {
 	for rank := 0; rank < 8; rank++ {
 		<div class="flex">
 			for file := 0; file < 8; file++ {
-				@Square(bs.Pieces[rank*8 + file], rank*8 + file, bs.Side == models.White)
+				@Square(bs.Pieces[rank*8 + file], rank*8 + file, bs.Clicable[rank*8 + file])
 			}
 		</div>
 	}
@@ -49,7 +62,7 @@ templ BoardBlackView(bs *models.BoardState) {
 	for rank := 7; rank >= 0; rank-- {
 		<div class="flex">
 			for file := 7; file >= 0; file-- {
-				@Square(bs.Pieces[rank*8 + file], rank*8 + file, bs.Side == models.Black)
+				@Square(bs.Pieces[rank*8 + file], rank*8 + file, bs.Clicable[rank*8 + file])
 			}
 		</div>
 	}
