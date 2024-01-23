@@ -25,7 +25,11 @@ func (app *App) loadRoutes() {
 
 	app.router.Handle("/protected", app.requiredAuthMiddleware(http.HandlerFunc(protectedHandler)))
 
+	app.router.HandleFunc("/play", app.Play).Methods("GET")
+	app.router.HandleFunc("/computer", app.Computer).Methods("GET")
+	app.router.HandleFunc("/tournaments", app.Tournaments).Methods("GET")
 	app.router.HandleFunc("/game", app.Game).Methods("GET")
+	// app.router.HandleFunc("/game/{id}", app.GivenGame).Methods("GET")
 
 	app.router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		err := layout.Home().Render(r.Context(), w)

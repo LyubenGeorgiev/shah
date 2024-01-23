@@ -8,8 +8,20 @@ const (
 )
 
 type BoardState struct {
-	Pieces   [64]string
-	Clicable [64]bool
-	View     Side
-	Side     Side
+	Highlighted []int
+	Pieces      map[int]string
+	Moves       []int
+	Captures    []int
+	Unselect    []int
+	View        Side
 }
+
+// type Action string
+
+// const (
+// 	SELECT   Action = "select"
+// 	UNSELECT Action = "unselect"
+// 	MOVE     Action = "move"
+// 	CAPTURE  Action = "capture"
+// 	NONE     Action = ""
+// )

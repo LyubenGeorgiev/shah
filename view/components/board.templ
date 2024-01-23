@@ -2,6 +2,7 @@ package components
 
 import (
 	"github.com/LyubenGeorgiev/shah/view/components/models"
+	"fmt"
 )
 
 var squareToString = [...]string{
@@ -15,65 +16,76 @@ var squareToString = [...]string{
 	"a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",
 }
 
-func getBackground(square int) string {
-	if (square / 8 + square % 8) % 2 == 0 {
-		return "bg-yellow-100"
-	}
+// func getBackground(square int) string {
+// 	if (square / 8 + square % 8) % 2 == 0 {
+// 		return "bg-yellow-100"
+// 	}
 
-	return "bg-green-500"
-}
+// 	return "bg-green-500"
+// }
 
-templ component(shouldBeUsed bool, attrs templ.Attributes) {
-  <p { attrs... }></p>
-  <hr
-    if shouldBeUsed {
-      { attrs... }
-    }
-  />
-}
+// templ Square(piece string, square int, action models.Action) {
+// 	<div { templ.Attributes{
+// 		"id": squareToString[square],
+// 		"hx-trigger": templ.KeyValue[string, bool]{Key: "click", Value: action != models.NONE},
+// 		"ws-send": action != models.NONE,
+// 		"name": templ.KeyValue[string, bool]{Key: string(action), Value: action != models.NONE},
+// 	}... }
+// 		class={ getBackground(square), templ.KV("cursor-pointer", (action != models.NONE && action != models.UNSELECT)) }
+// 	>
+// 		@Image("/static/images/" + piece + ".png", "/static/images/" + piece + ".png")
+// 	</div>
+// }
 
-templ usage() {
-  @component(false, templ.Attributes{"data-testid": "paragraph"}) 
-}
+// templ BoardWhiteView(bs *models.BoardState) {
+// 	for rank := 0; rank < 8; rank++ {
+// 		<div class="flex">
+// 			for file := 0; file < 8; file++ {
+// 				@Square(bs.Pieces[rank*8 + file], rank*8 + file, bs.Actions[rank*8 + file])
+// 			}
+// 		</div>
+// 	}
+// }
 
-templ Square(piece string, square int, active bool) {
-	<div { templ.Attributes{
-		"id": squareToString[square],
-		"hx-trigger": templ.KeyValue[string, bool]{Key: "click", Value: active},
-		"ws-send": active,
-	}... }
-		class={ getBackground(square), templ.KV("cursor-pointer", active) }
-	>
-		@Image("/static/images/" + piece + ".png", "/static/images/" + piece + ".png")
+// templ BoardBlackView(bs *models.BoardState) {
+// 	for rank := 7; rank >= 0; rank-- {
+// 		<div class="flex">
+// 			for file := 7; file >= 0; file-- {
+// 				@Square(bs.Pieces[rank*8 + file], rank*8 + file, bs.Actions[rank*8 + file])
+// 			}
+// 		</div>
+// 	}
+// }
+
+templ clickableSquare(square int, action string, clases... string) {
+	<div class={ clases }
+		 id={ squareToString[square] }
+		 hx-trigger="click"
+		 name={ action }
+		 ws-send>
 	</div>
 }
 
-templ BoardWhiteView(bs *models.BoardState) {
-	for rank := 0; rank < 8; rank++ {
-		<div class="flex">
-			for file := 0; file < 8; file++ {
-				@Square(bs.Pieces[rank*8 + file], rank*8 + file, bs.Clicable[rank*8 + file])
-			}
-		</div>
-	}
-}
-
-templ BoardBlackView(bs *models.BoardState) {
-	for rank := 7; rank >= 0; rank-- {
-		<div class="flex">
-			for file := 7; file >= 0; file-- {
-				@Square(bs.Pieces[rank*8 + file], rank*8 + file, bs.Clicable[rank*8 + file])
-			}
-		</div>
-	}
-}
-
 templ Board(bs *models.BoardState) {
-	<div hx-ext="ws" ws-connect="/game" hx-swap-oob="outerHTML">
-		if bs.View == models.White {
-			@BoardWhiteView(bs)
-		} else {
-			@BoardBlackView(bs)
+	<div id="board" class={ "board", "m-4", templ.KV("flipped", bs.View == models.Black) } hx-ext="ws" ws-connect="/game" hx-target="#board" hx-swap-oob="outerHTML">
+		for _, square := range bs.Highlighted {
+			<div class={ "highlight", fmt.Sprintf("square-%d", square) }></div>
+		}
+
+		for square, piece := range bs.Pieces {
+			@clickableSquare(square, "select", "piece", piece, fmt.Sprintf("square-%d", square))
+		}
+
+		for _, square := range bs.Moves {
+			@clickableSquare(square, "move", "hint", fmt.Sprintf("square-%d", square))
+		}
+
+		for _, square := range bs.Captures {
+			@clickableSquare(square, "move", "capture-hint", fmt.Sprintf("square-%d", square))
+		}
+
+		for _, square := range bs.Unselect {
+			@clickableSquare(square, "unselect", "unselect", fmt.Sprintf("square-%d", square))
 		}
 	</div>
 }

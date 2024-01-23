@@ -19,19 +19,14 @@ templ Layout(title string) {
       <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
       <script src="https://unpkg.com/htmx.org/dist/ext/ws.js"></script>
       <link rel="stylesheet" href="/static/css/base.css"/>
+      <link rel="stylesheet" href="/static/css/board.css"/>
     </head>
 
-    <body class="bg-gray-100">
-      <div class="flex h-screen bg-gray-200">
-        // Sidebar
-        @nav.Template()
-        // Main Content
-        <div class="flex-1">
-          <div class="p-8">
-              { children... }
-          </div>
-        </div>
-      </div>
+    <body class="flex flex-row h-screen bg-gray-200">
+      // Sidebar
+      @nav.Template(title)
+      // Main Content
+      { children... }
     </body>
   </html>
 }
@@ -42,8 +37,26 @@ templ Home() {
 	}
 }
 
+templ Play() {
+	@Layout("Play") {
+		<div data-testid="homeTemplate">Welcome to play online page.</div>
+	}
+}
+
+templ Computer() {
+	@Layout("Computer") {
+		<div data-testid="homeTemplate">Welcome to play Computer page.</div>
+	}
+}
+
+templ Tournaments() {
+	@Layout("Tournaments") {
+		<div data-testid="homeTemplate">Welcome to play Tournaments page.</div>
+	}
+}
+
 templ BoardTest(bs *models.BoardState) {
-	@Layout("Shah.com - Play Chess Online") {
+	@Layout("Play") {
 		@components.Board(bs)
 	}
 }
