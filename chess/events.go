@@ -1,11 +1,14 @@
-package game
+package chess
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 type inputEvent struct {
-	Square string `json:"HX-Trigger"`
-	Action string `json:"HX-Trigger-Name"`
-	URL    string `json:"HX-Current-URL"`
+	Client *Client `json:"-"`
+	Square string  `json:"HX-Trigger"`
+	Action string  `json:"HX-Trigger-Name"`
+	URL    string  `json:"HX-Current-URL"`
 }
 
 func UnmarshalAction(bytes []byte) (*inputEvent, error) {

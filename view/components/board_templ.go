@@ -13,6 +13,7 @@ import "bytes"
 import (
 	"fmt"
 	"github.com/LyubenGeorgiev/shah/view/components/models"
+	"strings"
 )
 
 var squareToString = [...]string{
@@ -26,46 +27,14 @@ var squareToString = [...]string{
 	"a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",
 }
 
-// func getBackground(square int) string {
-// 	if (square / 8 + square % 8) % 2 == 0 {
-// 		return "bg-yellow-100"
-// 	}
+func pieceSide(piece string) models.Side {
+	if strings.ToLower(piece) == piece {
+		return models.Black
+	}
 
-// 	return "bg-green-500"
-// }
+	return models.White
+}
 
-// templ Square(piece string, square int, action models.Action) {
-// 	<div { templ.Attributes{
-// 		"id": squareToString[square],
-// 		"hx-trigger": templ.KeyValue[string, bool]{Key: "click", Value: action != models.NONE},
-// 		"ws-send": action != models.NONE,
-// 		"name": templ.KeyValue[string, bool]{Key: string(action), Value: action != models.NONE},
-// 	}... }
-// 		class={ getBackground(square), templ.KV("cursor-pointer", (action != models.NONE && action != models.UNSELECT)) }
-// 	>
-// 		@Image("/static/images/" + piece + ".png", "/static/images/" + piece + ".png")
-// 	</div>
-// }
-
-// templ BoardWhiteView(bs *models.BoardState) {
-// 	for rank := 0; rank < 8; rank++ {
-// 		<div class="flex">
-// 			for file := 0; file < 8; file++ {
-// 				@Square(bs.Pieces[rank*8 + file], rank*8 + file, bs.Actions[rank*8 + file])
-// 			}
-// 		</div>
-// 	}
-// }
-
-//	templ BoardBlackView(bs *models.BoardState) {
-//		for rank := 7; rank >= 0; rank-- {
-//			<div class="flex">
-//				for file := 7; file >= 0; file-- {
-//					@Square(bs.Pieces[rank*8 + file], rank*8 + file, bs.Actions[rank*8 + file])
-//				}
-//			</div>
-//		}
-//	}
 func clickableSquare(square int, action string, clases ...string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
@@ -132,7 +101,7 @@ func Board(bs *models.BoardState) templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var4 = []any{"board", "m-4", templ.KV("flipped", bs.View == models.Black)}
+		var templ_7745c5c3_Var4 = []any{"board", "m-4", templ.KV("flipped", bs != nil && bs.View == models.Black)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var4...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -145,49 +114,78 @@ func Board(bs *models.BoardState) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-ext=\"ws\" ws-connect=\"/game\" hx-target=\"#board\" hx-swap-oob=\"outerHTML\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-ext=\"ws\" ws-connect=\"/game\" hx-target=\"#board\" hx-swap-oob=\"outerHTML\" hx-trigger=\"click\" name=\"unselect\" ws-send>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		for _, square := range bs.Highlighted {
-			var templ_7745c5c3_Var5 = []any{"highlight", fmt.Sprintf("square-%d", square)}
-			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var5...)
+		if bs != nil {
+			for _, square := range bs.Highlighted {
+				var templ_7745c5c3_Var5 = []any{"highlight", fmt.Sprintf("square-%d", square)}
+				templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var5...)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ.CSSClasses(templ_7745c5c3_Var5).String()))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"></div>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"")
+			for square, piece := range bs.Pieces {
+				if pieceSide(piece) == bs.View {
+					templ_7745c5c3_Err = clickableSquare(square, "select", "piece", piece, fmt.Sprintf("square-%d", square)).Render(ctx, templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				} else {
+					templ_7745c5c3_Err = clickableSquare(square, "unselect", "piece", piece, fmt.Sprintf("square-%d", square)).Render(ctx, templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ.CSSClasses(templ_7745c5c3_Var5).String()))
+			for _, square := range bs.Moves {
+				templ_7745c5c3_Err = clickableSquare(square, "move", "hint", fmt.Sprintf("square-%d", square)).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"></div>")
+			for _, square := range bs.Captures {
+				templ_7745c5c3_Err = clickableSquare(square, "move", "capture-hint", fmt.Sprintf("square-%d", square)).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+		} else {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-		}
-		for square, piece := range bs.Pieces {
-			templ_7745c5c3_Err = clickableSquare(square, "select", "piece", piece, fmt.Sprintf("square-%d", square)).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Var6 := `Waiting for board`
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-		}
-		for _, square := range bs.Moves {
-			templ_7745c5c3_Err = clickableSquare(square, "move", "hint", fmt.Sprintf("square-%d", square)).Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
-		for _, square := range bs.Captures {
-			templ_7745c5c3_Err = clickableSquare(square, "move", "capture-hint", fmt.Sprintf("square-%d", square)).Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
-		for _, square := range bs.Unselect {
-			templ_7745c5c3_Err = clickableSquare(square, "unselect", "unselect", fmt.Sprintf("square-%d", square)).Render(ctx, templ_7745c5c3_Buffer)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

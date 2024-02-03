@@ -3,7 +3,7 @@ package layout
 import (
   "github.com/LyubenGeorgiev/shah/view/nav"
   "github.com/LyubenGeorgiev/shah/view/components"
-  "github.com/LyubenGeorgiev/shah/view/components/models"
+  // "github.com/LyubenGeorgiev/shah/view/components/models"
 )
 
 templ Layout(title string) {
@@ -39,7 +39,7 @@ templ Home() {
 
 templ Play() {
 	@Layout("Play") {
-		<div data-testid="homeTemplate">Welcome to play online page.</div>
+		@components.Board(nil)
 	}
 }
 
@@ -52,11 +52,5 @@ templ Computer() {
 templ Tournaments() {
 	@Layout("Tournaments") {
 		<div data-testid="homeTemplate">Welcome to play Tournaments page.</div>
-	}
-}
-
-templ BoardTest(bs *models.BoardState) {
-	@Layout("Play") {
-		@components.Board(bs)
 	}
 }

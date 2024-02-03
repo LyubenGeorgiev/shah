@@ -12,16 +12,5 @@ type BoardState struct {
 	Pieces      map[int]string
 	Moves       []int
 	Captures    []int
-	Unselect    []int
 	View        Side
 }
-
-// type Action string
-
-// const (
-// 	SELECT   Action = "select"
-// 	UNSELECT Action = "unselect"
-// 	MOVE     Action = "move"
-// 	CAPTURE  Action = "capture"
-// 	NONE     Action = ""
-// )
