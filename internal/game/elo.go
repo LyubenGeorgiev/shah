@@ -44,7 +44,7 @@ func Matchmake(player *User, pool []*User, params MatchmakingParams) (*User, err
 	// Filter out the player from the pool
 	var opponents []*User
 	for _, p := range pool {
-		if p.ID != player.ID {
+		if p.Username != player.Username {
 			opponents = append(opponents, p)
 		}
 	}
