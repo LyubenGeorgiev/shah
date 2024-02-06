@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/LyubenGeorgiev/shah/view/components"
-	"github.com/LyubenGeorgiev/shah/view/components/models"
+	boardview "github.com/LyubenGeorgiev/shah/view/board"
+	"github.com/LyubenGeorgiev/shah/view/board/models"
 	"github.com/gorilla/websocket"
 )
 
@@ -18,31 +18,26 @@ var (
 )
 
 type Client struct {
-	UserID        string
-	game          *Game
-	conn          *websocket.Conn
-	outputs       chan *models.BoardState
-	Side          Side
-	RemainingTime time.Duration
-	ctx           context.Context
+	game    *Game
+	conn    *websocket.Conn
+	outputs chan *models.BoardState
+	Side    Side
+	ctx     context.Context
 }
 
-func NewClient(userID string, game *Game, conn *websocket.Conn, outputs chan *models.BoardState, side Side, remainingTime time.Duration, ctx context.Context) *Client {
+func NewClient(game *Game, conn *websocket.Conn, outputs chan *models.BoardState, side Side, ctx context.Context) *Client {
 	return &Client{
-		UserID:        userID,
-		game:          game,
-		conn:          conn,
-		outputs:       outputs,
-		Side:          side,
-		RemainingTime: remainingTime,
-		ctx:           ctx,
+		game:    game,
+		conn:    conn,
+		outputs: outputs,
+		Side:    side,
+		ctx:     ctx,
 	}
 }
 
 func (c *Client) ListenInput() {
 	defer func() {
 		// Graceful Close the Connection once this
-		fmt.Println("Closing client", c.UserID)
 		c.game.removeClient(c)
 	}()
 
@@ -69,7 +64,6 @@ func (c *Client) ListenInput() {
 		}
 
 		inputEvent.Client = c
-		fmt.Printf("%+v\n", inputEvent)
 
 		c.game.InputEvent(inputEvent)
 	}
@@ -98,7 +92,7 @@ func (c *Client) ListenOutput() {
 			}
 
 			var buf bytes.Buffer
-			if err := components.Board(bs).Render(c.ctx, &buf); err != nil {
+			if err := boardview.Board(bs).Render(c.ctx, &buf); err != nil {
 				fmt.Printf("Error rendering board: %v\n", err)
 				continue
 			}

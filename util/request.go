@@ -1,8 +1,8 @@
-package application
+package util
 
 import "net/http"
 
-func getUserID(r *http.Request) (string, error) {
+func GetUserID(r *http.Request) (string, error) {
 	cookieUser, err := r.Cookie("user_id")
 	if err != nil {
 		return "", err

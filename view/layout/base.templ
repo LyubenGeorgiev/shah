@@ -2,8 +2,6 @@ package layout
 
 import (
   "github.com/LyubenGeorgiev/shah/view/nav"
-  "github.com/LyubenGeorgiev/shah/view/components"
-  // "github.com/LyubenGeorgiev/shah/view/components/models"
 )
 
 templ Layout(title string) {
@@ -34,12 +32,6 @@ templ Layout(title string) {
 templ Home() {
 	@Layout("Shah.com - Play Chess Online") {
 		<div data-testid="homeTemplate">Welcome to my website.</div>
-	}
-}
-
-templ Play() {
-	@Layout("Play") {
-		@components.Board(nil)
 	}
 }
 

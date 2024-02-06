@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/LyubenGeorgiev/shah/cache"
+	"github.com/LyubenGeorgiev/shah/chess"
 	"github.com/LyubenGeorgiev/shah/db"
 	"github.com/gorilla/mux"
 )
@@ -15,6 +16,7 @@ type App struct {
 	router  *mux.Router
 	Storage db.Storage
 	Cache   cache.Cache
+	chess.Manager
 }
 
 func New() *App {
@@ -22,6 +24,7 @@ func New() *App {
 		router:  mux.NewRouter().StrictSlash(true),
 		Storage: db.NewPostgresStorage(),
 		Cache:   cache.NewRedisCache(),
+		Manager: *chess.NewManager(),
 	}
 	app.loadRoutes()
 

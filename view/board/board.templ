@@ -1,0 +1,74 @@
+package components
+
+import (
+	"github.com/LyubenGeorgiev/shah/view/board/models"
+	"github.com/LyubenGeorgiev/shah/view/layout"
+	"fmt"
+	"strings"
+)
+
+var squareToString = [...]string{
+	"a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8",
+	"a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",
+	"a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6",
+	"a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5",
+	"a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4",
+	"a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3",
+	"a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2",
+	"a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",
+}
+
+func pieceSide(piece string) models.Side {
+	if strings.ToLower(piece) == piece {
+		return models.Black
+	}
+
+	return models.White
+} 
+
+templ clickableSquare(square int, action string, clases... string) {
+	<div class={ clases }
+		 id={ squareToString[square] }
+		 hx-trigger="click"
+		 name={ action }
+		 ws-send>
+	</div>
+}
+
+templ BoardWebsocket(gameID string) {
+	@layout.Layout("Play") {
+		<div class="h-full w-full" hx-ext="ws" ws-connect={ "/game/" + gameID } hx-target="#board" hx-swap-oob="outerHTML">
+			<div id="board">Searching for game</div>
+		</div>
+	}
+}
+
+templ Board(bs *models.BoardState) {
+	<div id="board" class={ "board", "m-4", templ.KV("flipped", bs != nil && bs.View == models.Black) } hx-trigger="click">
+		for _, square := range bs.Highlighted {
+			<div class={ "highlight", fmt.Sprintf("square-%d", square) }></div>
+		}
+
+		for square, piece := range bs.Pieces {
+			if pieceSide(piece) == bs.View {
+				@clickableSquare(square, "select", "piece", piece, fmt.Sprintf("square-%d", square))
+			} else {
+				@clickableSquare(square, "unselect", "piece", piece, fmt.Sprintf("square-%d", square))
+			}
+		}
+
+		for i := 0; i < 64; i++ {
+			if _, ok := bs.Pieces[i]; !ok {
+				@clickableSquare(i, "unselect", "piece", fmt.Sprintf("square-%d", i))
+			}
+		}
+
+		for _, square := range bs.Moves {
+			@clickableSquare(square, "move", "hint", fmt.Sprintf("square-%d", square))
+		}
+
+		for _, square := range bs.Captures {
+			@clickableSquare(square, "move", "capture-hint", fmt.Sprintf("square-%d", square))
+		}
+	</div>
+}

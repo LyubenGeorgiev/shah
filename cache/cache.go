@@ -10,5 +10,4 @@ type Cache interface {
 	Close() error
 	Set(ctx context.Context, key string, value string, expiration time.Duration) error
 	Exists(ctx context.Context, key string, value string) bool
-	UserIsIngame(ctx context.Context, userID string) (string, error)
 }

@@ -2,10 +2,8 @@ package cache
 
 import (
 	"context"
-	"fmt"
 	"time"
 
-	"github.com/LyubenGeorgiev/shah/cache/models"
 	"github.com/LyubenGeorgiev/shah/db"
 	"github.com/redis/go-redis/v9"
 )
@@ -44,42 +42,4 @@ func (r Redis) Set(ctx context.Context, key string, value string, expiration tim
 func (r Redis) Exists(ctx context.Context, key string, value string) bool {
 	val, err := r.rdb.Get(ctx, key).Result()
 	return err == nil && val == value
-}
-
-func (r Redis) UserIsIngame(ctx context.Context, userID string) (string, error) {
-	return r.rdb.HGet(ctx, userID, "gameid").Result()
-}
-
-func (r Redis) GetGame(ctx context.Context, gameID string) (*models.Game, error) {
-	gameData, err := r.rdb.HMGet(ctx, hashesKeyFromGameID(gameID), gameFields...).Result()
-	if err != nil {
-		return nil, err
-	}
-
-	return gameFromSlice(gameData)
-}
-
-func hashesKeyFromGameID(gameID string) string {
-	return fmt.Sprintf("game:%s", gameID)
-}
-
-func gameFromSlice(gameData []interface{}) (*models.Game, error) {
-	BoardFEN, ok := gameData[0].(string)
-	if !ok {
-		return nil, fmt.Errorf("Missing fen field in redis for given game")
-	}
-	whiteUserID, ok := gameData[1].(string)
-	if !ok {
-		return nil, fmt.Errorf("Missing whiteID field in redis for given game")
-	}
-	blackUserID, ok := gameData[2].(string)
-	if !ok {
-		return nil, fmt.Errorf("Missing blackID field in redis for given game")
-	}
-
-	return &models.Game{
-		BoardFEN:    BoardFEN,
-		WhiteUserID: whiteUserID,
-		BlackUserID: blackUserID,
-	}, nil
 }

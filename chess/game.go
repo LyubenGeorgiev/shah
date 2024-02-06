@@ -3,33 +3,43 @@ package chess
 import (
 	"context"
 	"fmt"
+	"log"
+	"net/http"
 	"time"
 
-	"github.com/LyubenGeorgiev/shah/view/components/models"
+	"github.com/LyubenGeorgiev/shah/view/board/models"
 	"github.com/google/uuid"
-	"github.com/gorilla/websocket"
 )
 
 type Game struct {
-	GameID   string
-	board    Board
-	lastMove *Move
-	inputs   chan *inputEvent
-	white    *Client
-	black    *Client
+	Manager            *Manager
+	GameID             string
+	whiteID            string
+	blackID            string
+	whiteRemainingTime time.Duration
+	blackRemainingTime time.Duration
+	board              Board
+	lastMove           *Move
+	inputs             chan *inputEvent
+	white              *Client
+	black              *Client
 }
 
-func NewGame(whiteID, blackID string, whiteConn, blackConn *websocket.Conn, whiteCtx, blackCtx context.Context) *Game {
+func NewGame(manager *Manager, whiteID, blackID string, timeGiven time.Duration) *Game {
 	id := uuid.Must(uuid.NewRandom()).String()
 	g := &Game{
-		GameID:   id,
-		board:    *NewBoadFromFen([]byte("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 ")),
-		lastMove: nil,
-		inputs:   make(chan *inputEvent),
+		Manager:            manager,
+		GameID:             id,
+		whiteID:            whiteID,
+		blackID:            blackID,
+		whiteRemainingTime: timeGiven,
+		blackRemainingTime: timeGiven,
+		board:              *NewBoadFromFen([]byte("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 ")),
+		lastMove:           nil,
+		inputs:             make(chan *inputEvent),
+		white:              nil,
+		black:              nil,
 	}
-
-	g.white = NewClient(whiteID, g, whiteConn, make(chan *models.BoardState), white, 10*time.Minute, whiteCtx)
-	g.black = NewClient(blackID, g, blackConn, make(chan *models.BoardState), black, 10*time.Minute, blackCtx)
 
 	return g
 }
@@ -42,33 +52,57 @@ func (g *Game) removeClient(c *Client) {
 	c.conn.Close()
 	if g.white == c {
 		g.white = nil
-	} else {
+	} else if g.black == c {
 		g.black = nil
 	}
 }
 
-func (g *Game) StartGame() {
-	go g.white.ListenInput()
-	go g.white.ListenOutput()
-	go g.black.ListenInput()
-	go g.black.ListenOutput()
-
-	g.white.outputs <- &models.BoardState{
-		Highlighted: nil,
-		Pieces:      g.getPieces(),
-		Moves:       nil,
-		Captures:    nil,
-		View:        models.Side(white),
+func (g *Game) Connect(w http.ResponseWriter, r *http.Request, userID string) error {
+	conn, err := wsUpgrader.Upgrade(w, r, nil)
+	if err != nil {
+		return err
 	}
 
-	g.black.outputs <- &models.BoardState{
-		Highlighted: nil,
-		Pieces:      g.getPieces(),
-		Moves:       nil,
-		Captures:    nil,
-		View:        models.Side(black),
+	if g.whiteID == userID {
+		if g.white != nil {
+			g.removeClient(g.white)
+		}
+
+		g.white = NewClient(g, conn, make(chan *models.BoardState), white, r.Context())
+
+		go g.white.ListenInput()
+		go g.white.ListenOutput()
+
+		g.white.outputs <- &models.BoardState{
+			Highlighted: nil,
+			Pieces:      g.getPieces(),
+			Moves:       nil,
+			Captures:    nil,
+			View:        models.Side(white),
+		}
+	} else if g.blackID == userID {
+		if g.black != nil {
+			g.removeClient(g.black)
+		}
+
+		g.black = NewClient(g, conn, make(chan *models.BoardState), black, r.Context())
+
+		go g.black.ListenInput()
+		go g.black.ListenOutput()
+
+		g.black.outputs <- &models.BoardState{
+			Highlighted: nil,
+			Pieces:      g.getPieces(),
+			Moves:       nil,
+			Captures:    nil,
+			View:        models.Side(black),
+		}
 	}
 
+	return nil
+}
+
+func (g *Game) Start() {
 	moves := make(chan Move)
 	for g.board.Gameover() {
 		timer := g.getTimer()
@@ -79,6 +113,7 @@ func (g *Game) StartGame() {
 
 		select {
 		case move := <-moves:
+			// TODO log the move somewhere
 			fmt.Println(move)
 		case <-timer.C:
 			cancel()
@@ -89,14 +124,16 @@ func (g *Game) StartGame() {
 		timer.Stop()
 	}
 	// Game is over handle the winner
+	log.Println("Game", g.GameID, "won by", g.board.Side)
+	g.Manager.RemoveGame(g)
 }
 
 func (g *Game) getTimer() *time.Timer {
 	if g.board.Side == white {
-		return time.NewTimer(g.white.RemainingTime)
+		return time.NewTimer(g.whiteRemainingTime)
 	}
 
-	return time.NewTimer(g.black.RemainingTime)
+	return time.NewTimer(g.blackRemainingTime)
 }
 
 func (g *Game) handleInputEvents(ctx context.Context, moves chan<- Move) {
@@ -183,25 +220,25 @@ func (g *Game) handleInputEvents(ctx context.Context, moves chan<- Move) {
 					highlighted = append(highlighted, int(g.lastMove.getTarget()))
 				}
 
-				g.white.outputs <- &models.BoardState{
+				UpdateClient(g.white, &models.BoardState{
 					Highlighted: highlighted,
 					Pieces:      g.getPieces(),
 					Moves:       nil,
 					Captures:    nil,
 					View:        models.Side(white),
-				}
+				})
 
-				g.black.outputs <- &models.BoardState{
+				UpdateClient(g.black, &models.BoardState{
 					Highlighted: highlighted,
 					Pieces:      g.getPieces(),
 					Moves:       nil,
 					Captures:    nil,
 					View:        models.Side(black),
-				}
+				})
 
 				return
 			} else {
-				fmt.Println("Unknown action!")
+				fmt.Println("Unknown action:", event.Action)
 				continue
 			}
 		case <-ctx.Done():
@@ -226,4 +263,10 @@ func (g *Game) getPieces() map[int]string {
 	}
 
 	return pieces
+}
+
+func UpdateClient(c *Client, update *models.BoardState) {
+	if c != nil {
+		c.outputs <- update
+	}
 }
