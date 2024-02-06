@@ -8,6 +8,8 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+var gameFields = []string{"fen", "whiteid", "blackid"}
+
 type Redis struct {
 	rdb *redis.Client
 }

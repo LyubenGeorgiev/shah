@@ -20,168 +20,6 @@ var charToPiece = [...]piece{'P': P, 'N': N, 'B': B, 'R': R, 'Q': Q, 'K': K, 'p'
 // Convert encoded constants to ASCII character pieces
 var pieceToChar = [...]byte{P: 'P', N: 'N', B: 'B', R: 'R', Q: 'Q', K: 'K', p: 'p', n: 'n', b: 'b', r: 'r', q: 'q', k: 'k', no_piece: ' '}
 
-// Static material scores
-var materialScore = [...]int{P: 100, N: 300, B: 350, R: 500, Q: 1000, K: 10000, p: -100, n: -300, b: -350, r: -500, q: -1000, k: -10000, no_piece: 0}
-
-// white pawn positional score
-var whitePawnScore = [...]int{
-	90, 90, 90, 90, 90, 90, 90, 90,
-	30, 30, 30, 40, 40, 30, 30, 30,
-	20, 20, 20, 30, 30, 30, 20, 20,
-	10, 10, 10, 20, 20, 10, 10, 10,
-	5, 5, 10, 20, 20, 5, 5, 5,
-	0, 0, 0, 5, 5, 0, 0, 0,
-	0, 0, 0, -10, -10, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-}
-
-// black pawn positional score
-var blackPawnScore = [...]int{
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 10, 10, 0, 0, 0,
-	0, 0, 0, -5, -5, 0, 0, 0,
-	-5, -5, -10, -20, -20, -5, -5, -5,
-	-10, -10, -10, -20, -20, -10, -10, -10,
-	-20, -20, -20, -30, -30, -30, -20, -20,
-	-30, -30, -30, -40, -40, -30, -30, -30,
-	-90, -90, -90, -90, -90, -90, -90, -90,
-}
-
-// white knight positional score
-var whiteKnightScore = [...]int{
-	-5, 0, 0, 0, 0, 0, 0, -5,
-	-5, 0, 0, 10, 10, 0, 0, -5,
-	-5, 5, 20, 20, 20, 20, 5, -5,
-	-5, 10, 20, 30, 30, 20, 10, -5,
-	-5, 10, 20, 30, 30, 20, 10, -5,
-	-5, 5, 20, 10, 10, 20, 5, -5,
-	-5, 0, 0, 0, 0, 0, 0, -5,
-	-5, -10, 0, 0, 0, 0, -10, -5,
-}
-
-// black knight positional score
-var blackKnightScore = [...]int{
-	5, 10, 0, 0, 0, 0, 10, 5,
-	5, 0, 0, 0, 0, 0, 0, 5,
-	5, -5, -20, -10, -10, -20, -5, 5,
-	5, -10, -20, -30, -30, -20, -10, 5,
-	5, -10, -20, -30, -30, -20, -10, 5,
-	5, -5, -20, -20, -20, -20, -5, 5,
-	5, 0, 0, -10, -10, 0, 0, 5,
-	5, 0, 0, 0, 0, 0, 0, 5,
-}
-
-// white bishop positional score
-var whiteBishopScore = [...]int{
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 10, 10, 0, 0, 0,
-	0, 0, 10, 20, 20, 10, 0, 0,
-	0, 0, 10, 20, 20, 10, 0, 0,
-	0, 10, 0, 0, 0, 0, 10, 0,
-	0, 30, 0, 0, 0, 0, 30, 0,
-	0, 0, -10, 0, 0, -10, 0, 0,
-}
-
-// black bishop positional score
-var blackBishopScore = [...]int{
-	0, 0, 10, 0, 0, 10, 0, 0,
-	0, -30, 0, 0, 0, 0, -30, 0,
-	0, -10, 0, 0, 0, 0, -10, 0,
-	0, 0, -10, -20, -20, -10, 0, 0,
-	0, 0, -10, -20, -20, -10, 0, 0,
-	0, 0, 0, -10, -10, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-}
-
-// white rook positional score
-var whiteRookScore = [...]int{
-	50, 50, 50, 50, 50, 50, 50, 50,
-	50, 50, 50, 50, 50, 50, 50, 50,
-	0, 0, 10, 20, 20, 10, 0, 0,
-	0, 0, 10, 20, 20, 10, 0, 0,
-	0, 0, 10, 20, 20, 10, 0, 0,
-	0, 0, 10, 20, 20, 10, 0, 0,
-	0, 0, 10, 20, 20, 10, 0, 0,
-	0, 0, 0, 20, 20, 0, 0, 0,
-}
-
-// black rook positional score
-var blackRookScore = [...]int{
-	0, 0, 0, -20, -20, 0, 0, 0,
-	0, 0, -10, -20, -20, -10, 0, 0,
-	0, 0, -10, -20, -20, -10, 0, 0,
-	0, 0, -10, -20, -20, -10, 0, 0,
-	0, 0, -10, -20, -20, -10, 0, 0,
-	0, 0, -10, -20, -20, -10, 0, 0,
-	-50, -50, -50, -50, -50, -50, -50, -50,
-	-50, -50, -50, -50, -50, -50, -50, -50,
-}
-
-// queen positional score
-var queenScore = [...]int{
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-}
-
-// white king positional score
-var whiteKingScore = [...]int{
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 5, 5, 5, 5, 0, 0,
-	0, 5, 5, 10, 10, 5, 5, 0,
-	0, 5, 10, 20, 20, 10, 5, 0,
-	0, 5, 10, 20, 20, 10, 5, 0,
-	0, 0, 5, 10, 10, 5, 0, 0,
-	0, 5, 5, -5, -5, 0, 5, 0,
-	0, 0, 5, 0, -15, 0, 10, 0,
-}
-
-// black king positional score
-var blackKingScore = [...]int{
-	0, 0, -5, 0, 15, 0, -10, 0,
-	0, -5, -5, 5, 5, 0, -5, 0,
-	0, 0, -5, -10, -10, -5, 0, 0,
-	0, -5, -10, -20, -20, -10, -5, 0,
-	0, -5, -10, -20, -20, -10, -5, 0,
-	0, -5, -5, -10, -10, -5, -5, 0,
-	0, 0, -5, -5, -5, -5, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-}
-
-// mirror positional score tables for opposite side
-var mirrorScore = [...]square{
-	a1, b1, c1, d1, e1, f1, g1, h1,
-	a2, b2, c2, d2, e2, f2, g2, h2,
-	a3, b3, c3, d3, e3, f3, g3, h3,
-	a4, b4, c4, d4, e4, f4, g4, h4,
-	a5, b5, c5, d5, e5, f5, g5, h5,
-	a6, b6, c6, d6, e6, f6, g6, h6,
-	a7, b7, c7, d7, e7, f7, g7, h7,
-	a8, b8, c8, d8, e8, f8, g8, h8,
-}
-
-var scores = [...][64]int{
-	P: whitePawnScore,
-	N: whiteKnightScore,
-	B: whiteBishopScore,
-	R: whiteRookScore,
-	Q: queenScore,
-	K: whiteKingScore,
-	p: blackPawnScore,
-	n: blackKnightScore,
-	b: blackBishopScore,
-	r: blackRookScore,
-	q: queenScore,
-	k: blackKingScore,
-}
-
 // Used to determine what the rights should be if a piece from here has moved
 var castlingRights = [...]castle{
 	7, 15, 15, 15, 3, 15, 15, 11,
@@ -376,7 +214,7 @@ var bishop_attacks [64][512]Bitboard
 var rook_attacks [64][4096]Bitboard
 
 // generate pawn attacks
-func mask_pawn_attacks(side side, square square) Bitboard {
+func mask_pawn_attacks(side Side, square square) Bitboard {
 	// result attacks bitboard
 	var attacks Bitboard = 0
 
@@ -638,7 +476,7 @@ func set_occupancy(index int, bits_in_mask int, attack_mask Bitboard) Bitboard {
 	// loop over the range of bits within attack mask
 	for count := 0; count < bits_in_mask; count++ {
 		// get LS1B index of attacks mask
-		square := square(attack_mask.getLs1bIndex())
+		square := square(attack_mask.GetLs1bIndex())
 
 		// pop LS1B in attack map
 		attack_mask.popBit(square)
@@ -717,11 +555,15 @@ func (b Bitboard) countBits() int {
 }
 
 // get least significant 1st bit index
-func (b Bitboard) getLs1bIndex() int {
+func (b Bitboard) GetLs1bIndex() int {
 	// make sure bitboard is not 0
 	if uint64(b) > 0 {
 		return bits.TrailingZeros64(uint64(b))
 	} else {
 		return -1
 	}
+}
+
+func (b *Bitboard) PopLs1b() {
+	b.popBit(square(b.GetLs1bIndex()))
 }

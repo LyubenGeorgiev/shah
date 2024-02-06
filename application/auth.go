@@ -49,7 +49,6 @@ func (a *App) Register(w http.ResponseWriter, r *http.Request) {
 	user.Password = string(pass)
 
 	if err := a.Storage.CreateUser(user); err != nil {
-		fmt.Println(err)
 		http.Error(w, "Saving registration failed", http.StatusInternalServerError)
 
 		return

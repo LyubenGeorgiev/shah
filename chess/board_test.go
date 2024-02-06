@@ -47,8 +47,6 @@ func perftDriver(depth int) {
 }
 
 func TestPerft(t *testing.T) {
-	Init()
-
 	board = NewBoadFromFen([]byte(start_position))
 	nodes = 0
 
