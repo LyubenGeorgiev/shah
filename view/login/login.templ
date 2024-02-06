@@ -80,11 +80,11 @@ label {
     <form id="login_form"
           hx-post="/login"
           hx-ext="json-enc"
-          hx-trigger="click from:#login"
+          hx-trigger="submit"
           hx-indicator="#login-indicator">
       <input class="inputs" type="email" name="email" placeholder="example@gmail.com"/>
       <input class="inputs" type="password" name="password"/>
-      <button id="login" type="button">Login</button>
+      <button id="login" type="submit">Login</button>
     </form>
     <img id="login-indicator" class="htmx-indicator" src="https://raw.githubusercontent.com/n3r4zzurr0/svg-spinners/abfa05c49acf005b8b1e0ef8eb25a67a7057eb20/svg-css/90-ring.svg"/>
   }

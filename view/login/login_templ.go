@@ -110,7 +110,7 @@ label {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</style> <form id=\"login_form\" hx-post=\"/login\" hx-ext=\"json-enc\" hx-trigger=\"click from:#login\" hx-indicator=\"#login-indicator\"><input class=\"inputs\" type=\"email\" name=\"email\" placeholder=\"example@gmail.com\"> <input class=\"inputs\" type=\"password\" name=\"password\"> <button id=\"login\" type=\"button\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</style> <form id=\"login_form\" hx-post=\"/login\" hx-ext=\"json-enc\" hx-trigger=\"submit\" hx-indicator=\"#login-indicator\"><input class=\"inputs\" type=\"email\" name=\"email\" placeholder=\"example@gmail.com\"> <input class=\"inputs\" type=\"password\" name=\"password\"> <button id=\"login\" type=\"submit\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
