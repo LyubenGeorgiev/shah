@@ -18,12 +18,12 @@ type User struct {
 
 func UpdateRating(winner *User, loser *User) {
 
-	KFactor := 32
+	KFactor := 32.0
 	WinProbability := 1.0 / (1.0 + math.Pow(10, (loser.Rating-winner.Rating)/400.0))
 
 	// Calculate the change in ratings
-	winnerDelta := KFactor * (1 - WinProbability)
-	loserDelta := KFactor * (0 - WinProbability)
+	winnerDelta  := (KFactor * (1 - WinProbability))
+	loserDelta :=  (KFactor * (0 - WinProbability))
 
 	// Update ratings and game statistics
 	winner.Rating += winnerDelta

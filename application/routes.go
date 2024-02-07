@@ -30,7 +30,7 @@ func (app *App) loadRoutes() {
 	app.router.HandleFunc("/tournaments", app.Tournaments).Methods("GET")
 	app.router.HandleFunc("/game/{id}", app.Manager.HandleGame).Methods("GET")
 
-	app.router.HandleFunc("/account", app.Account ).Methods("GET")
+	app.router.HandleFunc("/profiles", app.HandleProfile ).Methods("GET")
 
 	app.router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		err := layout.Home().Render(r.Context(), w)
