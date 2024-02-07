@@ -238,9 +238,9 @@ func Template(active string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var13 = []any{"flex items-center justify-center w-full h-16 mt-auto bg-gray-800 hover:bg-gray-700 hover:text-gray-300",
+			var templ_7745c5c3_Var13 = []any{"flex items-center justify-center w-full h-16 mt-auto",
 				templ.KV("bg-gray-800 hover:bg-gray-700 hover:text-gray-300", active != "Account"),
-				templ.KV("bg-gray-700 hover:text-gray-200", active != "Account")}
+				templ.KV("bg-gray-700 hover:text-gray-200", active == "Account")}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var13...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
