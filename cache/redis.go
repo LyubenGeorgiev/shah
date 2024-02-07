@@ -39,6 +39,10 @@ func (r Redis) Set(ctx context.Context, key string, value string, expiration tim
 	return err
 }
 
+func (r Redis) Del(ctx context.Context, key string) error {
+	return r.rdb.Del(ctx, key).Err()
+}
+
 func (r Redis) Exists(ctx context.Context, key string, value string) bool {
 	val, err := r.rdb.Get(ctx, key).Result()
 	return err == nil && val == value

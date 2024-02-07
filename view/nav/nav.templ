@@ -72,16 +72,24 @@ templ Template(active string) {
     </div>
 
     if util.IsAuthenticatedUser(ctx) {
-      // Account
-      <a class={"flex items-center justify-center w-full h-16 mt-auto",
-                templ.KV("bg-gray-800 hover:bg-gray-700 hover:text-gray-300", active != "Account"),
-                templ.KV("bg-gray-700 hover:text-gray-200", active == "Account") } href="/account">
-        <svg class="w-6 h-6 stroke-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <span class="ml-2 text-m font-medium">Account</span>
-      </a>
+      <div class="flex flex-col w-full mt-auto">
+        // Logout
+        <a class={ "flex items-center justify-center w-full h-12 rounded", colorStyles(active == "Logout") } href="/logout">
+          <svg class="w-6 h-6 stroke-current" fill="currentColor" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+            <path d="M725.333333 736V597.333333h-298.666666v-170.666666h298.666666V288L949.333333 512 725.333333 736M554.666667 85.333333a85.333333 85.333333 0 0 1 85.333333 85.333334v170.666666h-85.333333V170.666667H170.666667v682.666666h384v-170.666666h85.333333v170.666666a85.333333 85.333333 0 0 1-85.333333 85.333334H170.666667a85.333333 85.333333 0 0 1-85.333334-85.333334V170.666667a85.333333 85.333333 0 0 1 85.333334-85.333334h384z" fill="" />
+          </svg>
+          <span class="ml-2 text-m font-medium">Logout</span>
+        </a>
+        // Account
+        <a class={"flex items-center justify-center w-full h-16",
+                  templ.KV("bg-gray-800 hover:bg-gray-700 hover:text-gray-300", active != "Account"),
+                  templ.KV("bg-gray-700 hover:text-gray-200", active == "Account") } href="/account">
+          <svg class="w-6 h-6 stroke-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span class="ml-2 text-m font-medium">Account</span>
+        </a>
+      </div>
     }
-    
   </div>
 }

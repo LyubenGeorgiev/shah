@@ -1,7 +1,6 @@
 package application
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/LyubenGeorgiev/shah/util"
@@ -24,13 +23,11 @@ func (app *App) HandleProfiles(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) HandleAccount(w http.ResponseWriter, r *http.Request) {
-
 	userID, err := util.GetUserID(r)
 	if err != nil || userID == "" {
-		log.Println("Unknown user!", userID, "Error", err.Error())
 		http.Error(w, "Unknown user!", http.StatusUnauthorized)
 		return
 	}
 
-	http.Redirect(w, r, "profiles/"+userID, http.StatusSeeOther)
+	http.Redirect(w, r, "/profiles/"+userID, http.StatusSeeOther)
 }

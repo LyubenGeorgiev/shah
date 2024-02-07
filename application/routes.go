@@ -23,6 +23,8 @@ func (app *App) loadRoutes() {
 	app.router.HandleFunc("/login", app.LoginFrom).Methods("GET")
 	app.router.HandleFunc("/login", app.Login).Methods("POST")
 
+	app.router.Handle("/logout", app.requiredAuthMiddleware(http.HandlerFunc(app.Logout))).Methods("GET")
+
 	app.router.Handle("/protected", app.requiredAuthMiddleware(http.HandlerFunc(protectedHandler)))
 
 	app.router.HandleFunc("/play", app.Manager.HandlePlay).Methods("GET")
