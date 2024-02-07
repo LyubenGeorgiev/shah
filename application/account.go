@@ -6,12 +6,24 @@ import (
 
 	"github.com/LyubenGeorgiev/shah/util"
 	"github.com/LyubenGeorgiev/shah/view/account"
+	"github.com/gorilla/mux"
 
 	"github.com/LyubenGeorgiev/shah/db"
-
 )
 
-func (app *App) HandleProfile(w http.ResponseWriter, r *http.Request) {
+func (app *App) HandleProfiles(w http.ResponseWriter, r *http.Request) {
+	userID := mux.Vars(r)["id"]
+
+	user, err := db.NewPostgresStorage().FindByUserID(userID)
+	if err != nil {
+		http.Error(w, "Unknown user!", http.StatusNotFound)
+		return
+	}
+
+	account.Account(user).Render(r.Context(), w)
+}
+
+func (app *App) HandleAccount(w http.ResponseWriter, r *http.Request) {
 
 	userID, err := util.GetUserID(r)
 	if err != nil || userID == "" {
@@ -20,8 +32,5 @@ func (app *App) HandleProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err :=  db.NewPostgresStorage().FindByUserID(userID)
-
-	account.Account(user).Render(r.Context(), w)
-
+	http.Redirect(w, r, "profiles/"+userID, http.StatusSeeOther)
 }

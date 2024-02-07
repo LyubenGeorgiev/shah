@@ -107,7 +107,7 @@ func Template(active string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = components.Image("static/images/icon.svg", "Icon", "h-8 w-8").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = components.Image("/static/images/icon.svg", "Icon", "h-8 w-8").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -124,15 +124,15 @@ func Template(active string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = navbarElement("/play", "static/images/play.svg", "Play", active == "Play").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = navbarElement("/play", "/static/images/play.svg", "Play", active == "Play").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = navbarElement("/computer", "static/images/computer.svg", "Computer", active == "Computer").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = navbarElement("/computer", "/static/images/computer.svg", "Computer", active == "Computer").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = navbarElement("/tournaments", "static/images/tournaments.png", "Tournaments", active == "Tournaments").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = navbarElement("/tournaments", "/static/images/tournaments.png", "Tournaments", active == "Tournaments").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -253,7 +253,7 @@ func Template(active string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" href=\"/profiles\"><svg class=\"w-6 h-6 stroke-current\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z\"></path></svg> <span class=\"ml-2 text-m font-medium\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" href=\"/account\"><svg class=\"w-6 h-6 stroke-current\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z\"></path></svg> <span class=\"ml-2 text-m font-medium\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
