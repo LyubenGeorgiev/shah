@@ -13,4 +13,5 @@ type User struct {
 	Rating      float64 `json:"rating"`
 	GamesPlayed int     `json:"gamesPlayed"`
 	GamesWon    int     `json:"gamesWon"`
+	Image       string  `json:"image"`
 }

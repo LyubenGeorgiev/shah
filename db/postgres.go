@@ -85,3 +85,23 @@ func (ps *PostgresStorage) FindByUserID(userID string) (*models.User, error) {
 
 	return user, nil
 }
+
+
+// UpdateUserImage updates the image of the user with the given ID
+func (ps *PostgresStorage) UpdateUserImage(userID string, image string) error {
+    // Find the user by ID
+    user := &models.User{}
+    if err := ps.db.First(user, userID).Error; err != nil {
+        return fmt.Errorf("failed to find user: %w", err)
+    }
+
+    // Update the image field
+    user.Image = image
+
+    // Save the changes to the database
+    if err := ps.db.Save(user).Error; err != nil {
+        return fmt.Errorf("failed to update user image: %w", err)
+    }
+
+    return nil
+}
