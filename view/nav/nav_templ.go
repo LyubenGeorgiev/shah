@@ -103,7 +103,7 @@ func Template(active string) templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col items-center w-40 h-full overflow-hidden text-gray-400 bg-gray-900\"><a class=\"flex items-center w-full px-3 mt-3\" href=\"/\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col items-center h-full overflow-hidden text-gray-400 bg-gray-900 border-r-2 border-gray-700\"><a class=\"flex items-center w-full px-3 mt-3\" href=\"/\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -120,7 +120,7 @@ func Template(active string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></a><div class=\"w-full px-2\"><div class=\"flex flex-col items-center w-full mt-3 border-t border-gray-700\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></a><div class=\"flex flex-col w-full px-2\"><div class=\"flex flex-col items-center w-full mt-3 border-t border-gray-700\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

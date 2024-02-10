@@ -1,48 +1,48 @@
 package account
 
 import (
-    "github.com/LyubenGeorgiev/shah/db/models"
-    "github.com/LyubenGeorgiev/shah/view/layout"
-    "strconv"
-   
+  "github.com/LyubenGeorgiev/shah/db/models"
+  "github.com/LyubenGeorgiev/shah/view/layout"
+  "strconv"
 )
 
 templ Account(u *models.User) {
-    @layout.Layout("Account") {
-        @UserInfo(u)
+  @layout.Layout("Account") {
+    @UserInfo(u)
 	}
 }
 
+templ ProfilePicture(src string) {
+  <div id="profile_picture" class="w-20 h-20 rounded-full mr-8">
+      <img src={ src } alt="Icon" class="w-full h-full rounded-full"/>
+  </div>
+}
+
 templ UserInfo(u *models.User){
-<div class="flex w-full justify-center items-start p-8 bg-gray-900 text-gray-100">
+  <div class="flex w-full justify-center items-start p-8 bg-gray-900 text-gray-100">
     <div class="container mx-auto px-4 py-8 bg-gray-800 shadow-md rounded-md max-w-screen-md">
-        <div class="profile-container flex items-center mb-8">
-            <div class="w-20 h-20 rounded-full mr-8">
-                <img src={u.Image} alt="Icon" class="w-full h-full rounded-full"/>
-            </div>
-            <div>
-                <div class="text-2xl font-bold">{u.Username}</div>
-                <div class="flex flex-col">
-                    <div class="text-xl text-gray-400">Email: {u.Email}</div>
-                    <div class="text-xl text-gray-400">Rating: {strconv.FormatFloat(u.Rating, 'f', 2, 64)}</div>
-                    <div class="text-xl text-gray-400">Games Played: {strconv.Itoa(u.GamesPlayed)}</div>
-                    <div class="text-xl text-gray-400">Games Won: {strconv.Itoa(u.GamesWon)}</div>
-                </div>
-            </div>
-            <!-- Styled upload button -->
-            <form hx-encoding='multipart/form-data' hx-post='/upload' >
-    <label for="file-upload" style="background-color: #4CAF50; color: white; padding: 10px 20px; border-radius: 4px; cursor: pointer;">
-        Choose File
-    </label>
-    <input id="file-upload" type="file" name="file" style="display: none;"/>
-    <button style="background-color: #007bff; color: white; padding: 10px 20px; border-radius: 4px; cursor: pointer;">
-        Upload
-    </button>
-</form>
+      <div class="profile-container flex items-center mb-8">
+        @ProfilePicture(u.Image)
+        <div>
+          <div class="text-2xl font-bold">{u.Username}</div>
+          <div class="flex flex-col">
+            <div class="text-xl text-gray-400">Email: {u.Email}</div>
+            <div class="text-xl text-gray-400">Rating: {strconv.FormatFloat(u.Rating, 'f', 2, 64)}</div>
+            <div class="text-xl text-gray-400">Games Played: {strconv.Itoa(u.GamesPlayed)}</div>
+            <div class="text-xl text-gray-400">Games Won: {strconv.Itoa(u.GamesWon)}</div>
+          </div>
         </div>
+        <!-- Styled upload button -->
+        <form hx-encoding="multipart/form-data" hx-post="/upload" hx-swap="outerHTML" hx-target="#profile_picture">
+          <label for="file-upload" style="background-color: #4CAF50; color: white; padding: 10px 20px; border-radius: 4px; cursor: pointer;">
+              Choose File
+          </label>
+          <input id="file-upload" type="file" name="file" style="display: none;"/>
+          <button style="background-color: #007bff; color: white; padding: 10px 20px; border-radius: 4px; cursor: pointer;">
+              Upload
+          </button>
+        </form>
+      </div>
     </div>
-</div>
-
-
-
+  </div>
 }

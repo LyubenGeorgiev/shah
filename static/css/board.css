@@ -7,12 +7,13 @@
 .board {
   grid-column: board;
   height: calc(min(80vh, 80vw));
+  min-height: calc(min(80vh, 80vw));
   margin-left: 0;
   padding-bottom: 0;
   width: calc(min(80vh, 80vw));
+  min-width: calc(min(80vh, 80vw));
   background-repeat: no-repeat;
   background-size: 100%;
-  border-radius: 3px;
   contain: layout;
   position: relative;
   -webkit-user-select: none;
