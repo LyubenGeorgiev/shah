@@ -103,11 +103,11 @@ func Template(active string) templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col items-center w-40 h-full overflow-hidden text-gray-400 bg-gray-900\"><a class=\"flex items-center w-full px-3 mt-3\" href=\"/\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col items-center h-full overflow-hidden text-gray-400 bg-gray-900 border-r-2 border-gray-700\"><a class=\"flex items-center w-full px-3 mt-3\" href=\"/\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = components.Image("static/images/icon.svg", "Icon", "h-8 w-8").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = components.Image("/static/images/icon.svg", "Icon", "h-8 w-8").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -120,19 +120,19 @@ func Template(active string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></a><div class=\"w-full px-2\"><div class=\"flex flex-col items-center w-full mt-3 border-t border-gray-700\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></a><div class=\"flex flex-col w-full px-2\"><div class=\"flex flex-col items-center w-full mt-3 border-t border-gray-700\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = navbarElement("/play", "static/images/play.svg", "Play", active == "Play").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = navbarElement("/play", "/static/images/play.svg", "Play", active == "Play").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = navbarElement("/computer", "static/images/computer.svg", "Computer", active == "Computer").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = navbarElement("/computer", "/static/images/computer.svg", "Computer", active == "Computer").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = navbarElement("/tournaments", "static/images/tournaments.png", "Tournaments", active == "Tournaments").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = navbarElement("/tournaments", "/static/images/tournaments.png", "Tournaments", active == "Tournaments").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -234,13 +234,11 @@ func Template(active string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if util.IsAuthenticatedUser(ctx) {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col w-full mt-auto\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var13 = []any{"flex items-center justify-center w-full h-16 mt-auto bg-gray-800 hover:bg-gray-700 hover:text-gray-300",
-				templ.KV("bg-gray-800 hover:bg-gray-700 hover:text-gray-300", active != "Account"),
-				templ.KV("bg-gray-700 hover:text-gray-200", active != "Account")}
+			var templ_7745c5c3_Var13 = []any{"flex items-center justify-center w-full h-12 rounded", colorStyles(active == "Logout")}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var13...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -253,16 +251,44 @@ func Template(active string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" href=\"/account\"><svg class=\"w-6 h-6 stroke-current\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z\"></path></svg> <span class=\"ml-2 text-m font-medium\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" href=\"/logout\"><svg class=\"w-6 h-6 stroke-current\" fill=\"currentColor\" viewBox=\"0 0 1024 1024\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M725.333333 736V597.333333h-298.666666v-170.666666h298.666666V288L949.333333 512 725.333333 736M554.666667 85.333333a85.333333 85.333333 0 0 1 85.333333 85.333334v170.666666h-85.333333V170.666667H170.666667v682.666666h384v-170.666666h85.333333v170.666666a85.333333 85.333333 0 0 1-85.333333 85.333334H170.666667a85.333333 85.333333 0 0 1-85.333334-85.333334V170.666667a85.333333 85.333333 0 0 1 85.333334-85.333334h384z\" fill=\"\"></path></svg> <span class=\"ml-2 text-m font-medium\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Var14 := `Account`
+			templ_7745c5c3_Var14 := `Logout`
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var14)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></a>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var15 = []any{"flex items-center justify-center w-full h-16",
+				templ.KV("bg-gray-800 hover:bg-gray-700 hover:text-gray-300", active != "Account"),
+				templ.KV("bg-gray-700 hover:text-gray-200", active == "Account")}
+			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var15...)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ.CSSClasses(templ_7745c5c3_Var15).String()))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" href=\"/account\"><svg class=\"w-6 h-6 stroke-current\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z\"></path></svg> <span class=\"ml-2 text-m font-medium\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Var16 := `Account`
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var16)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></a></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

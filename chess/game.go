@@ -68,35 +68,35 @@ func (g *Game) Connect(w http.ResponseWriter, r *http.Request, userID string) er
 			g.removeClient(g.white)
 		}
 
-		g.white = NewClient(g, conn, make(chan *models.BoardState), white, r.Context())
+		g.white = NewClient(g, conn, white, r.Context())
 
 		go g.white.ListenInput()
 		go g.white.ListenOutput()
 
-		g.white.outputs <- &models.BoardState{
+		g.white.outputs <- Output{Type: "board", Payload: &models.BoardState{
 			Highlighted: nil,
 			Pieces:      g.getPieces(),
 			Moves:       nil,
 			Captures:    nil,
 			View:        models.Side(white),
-		}
+		}}
 	} else if g.blackID == userID {
 		if g.black != nil {
 			g.removeClient(g.black)
 		}
 
-		g.black = NewClient(g, conn, make(chan *models.BoardState), black, r.Context())
+		g.black = NewClient(g, conn, black, r.Context())
 
 		go g.black.ListenInput()
 		go g.black.ListenOutput()
 
-		g.black.outputs <- &models.BoardState{
+		g.black.outputs <- Output{Type: "board", Payload: &models.BoardState{
 			Highlighted: nil,
 			Pieces:      g.getPieces(),
 			Moves:       nil,
 			Captures:    nil,
 			View:        models.Side(black),
-		}
+		}}
 	}
 
 	return nil
@@ -136,6 +136,14 @@ func (g *Game) getTimer() *time.Timer {
 	return time.NewTimer(g.blackRemainingTime)
 }
 
+func (g *Game) getID(c *Client) string {
+	if g.white == c {
+		return g.whiteID
+	}
+
+	return g.blackID
+}
+
 func (g *Game) handleInputEvents(ctx context.Context, moves chan<- Move) {
 	var selected square
 	var legalMoves *Moves
@@ -145,6 +153,15 @@ func (g *Game) handleInputEvents(ctx context.Context, moves chan<- Move) {
 		case event, ok := <-g.inputs:
 			if !ok {
 				fmt.Println("Input event channel was closed unexpectedly!")
+			}
+
+			if event.Action == "chat" {
+				UpdateClient(event.Client, Output{Type: event.Action, Payload: []models.Message{}})
+				continue
+			} else if event.Action == "message" {
+				UpdateClient(g.white, Output{Type: event.Action, Payload: models.Message{Text: event.Message, UserID: g.getID(event.Client)}})
+				UpdateClient(g.black, Output{Type: event.Action, Payload: models.Message{Text: event.Message, UserID: g.getID(event.Client)}})
+				continue
 			}
 
 			// No events for opposite side player
@@ -162,13 +179,13 @@ func (g *Game) handleInputEvents(ctx context.Context, moves chan<- Move) {
 					highlighted = append(highlighted, int(g.lastMove.getTarget()))
 				}
 
-				event.Client.outputs <- &models.BoardState{
+				UpdateClient(event.Client, Output{Type: "board", Payload: &models.BoardState{
 					Highlighted: highlighted,
 					Pieces:      g.getPieces(),
 					Moves:       nil,
 					Captures:    nil,
 					View:        models.Side(event.Client.Side),
-				}
+				}})
 			} else if event.Action == "select" {
 				selected = stringToSquare[event.Square]
 				legalMoves = g.board.GetLegalMoves(false).FilterSelected(selected)
@@ -191,13 +208,13 @@ func (g *Game) handleInputEvents(ctx context.Context, moves chan<- Move) {
 					}
 				}
 
-				event.Client.outputs <- &models.BoardState{
+				UpdateClient(event.Client, Output{Type: "board", Payload: &models.BoardState{
 					Highlighted: highlighted,
 					Pieces:      g.getPieces(),
 					Moves:       quietMoves,
 					Captures:    captureMoves,
 					View:        models.Side(event.Client.Side),
-				}
+				}})
 			} else if event.Action == "move" {
 				target := stringToSquare[event.Square]
 				legalMoves = g.board.GetLegalMoves(false).FilterSelected(selected)
@@ -220,21 +237,21 @@ func (g *Game) handleInputEvents(ctx context.Context, moves chan<- Move) {
 					highlighted = append(highlighted, int(g.lastMove.getTarget()))
 				}
 
-				UpdateClient(g.white, &models.BoardState{
+				UpdateClient(g.white, Output{Type: "board", Payload: &models.BoardState{
 					Highlighted: highlighted,
 					Pieces:      g.getPieces(),
 					Moves:       nil,
 					Captures:    nil,
 					View:        models.Side(white),
-				})
+				}})
 
-				UpdateClient(g.black, &models.BoardState{
+				UpdateClient(g.black, Output{Type: "board", Payload: &models.BoardState{
 					Highlighted: highlighted,
 					Pieces:      g.getPieces(),
 					Moves:       nil,
 					Captures:    nil,
 					View:        models.Side(black),
-				})
+				}})
 
 				return
 			} else {
@@ -265,7 +282,7 @@ func (g *Game) getPieces() map[int]string {
 	return pieces
 }
 
-func UpdateClient(c *Client, update *models.BoardState) {
+func UpdateClient(c *Client, update Output) {
 	if c != nil {
 		c.outputs <- update
 	}

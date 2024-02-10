@@ -74,3 +74,18 @@ func (ps *PostgresStorage) FindOneUser(email, password string) (uint, error) {
 
 	return user.ID, nil
 }
+
+func (ps *PostgresStorage) FindByUserID(userID string) (*models.User, error) {
+	user := &models.User{}
+
+	if err := ps.db.Where("id = ?", userID).First(user).Error; err != nil {
+		return nil, fmt.Errorf("Wrong email or password")
+	}
+
+	return user, nil
+}
+
+// UpdateUserImage updates the image of the user with the given ID
+func (ps *PostgresStorage) UpdateUserImage(userID string, image string) error {
+	return ps.db.Model(&models.User{}).Where("id = ?", userID).UpdateColumn("image", image).Error
+}

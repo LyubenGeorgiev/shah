@@ -92,4 +92,31 @@ body {
 }
 
 
-  
+
+.custom-file-upload {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.custom-file-upload:hover {
+    background-color: #45a049;
+}
+
+.custom-upload-button {
+    border: none;
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.custom-upload-button:hover {
+    background-color: #0056b3;
+}

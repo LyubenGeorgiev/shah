@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/LyubenGeorgiev/shah/db/models"
+	"github.com/LyubenGeorgiev/shah/util"
 	"github.com/LyubenGeorgiev/shah/view/login"
 	"github.com/LyubenGeorgiev/shah/view/registration"
 	"github.com/google/uuid"
@@ -164,4 +165,22 @@ func (a *App) requiredAuthMiddleware(next http.Handler) http.Handler {
 			http.Error(w, "Unauthorized access", http.StatusUnauthorized)
 		}
 	})
+}
+
+func (a *App) Logout(w http.ResponseWriter, r *http.Request) {
+	userID, err := util.GetUserID(r)
+	if err != nil || userID == "" {
+		http.Error(w, "Unknown user!", http.StatusUnauthorized)
+		return
+	}
+
+	redisKey := fmt.Sprintf("auth:%s", userID)
+
+	err = a.Cache.Del(r.Context(), redisKey)
+	if err != nil {
+		http.Error(w, "Error logging out", http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

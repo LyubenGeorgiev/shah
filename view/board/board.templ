@@ -29,7 +29,6 @@ func pieceSide(piece string) models.Side {
 templ clickableSquare(square int, action string, clases... string) {
 	<div class={ clases }
 		 id={ squareToString[square] }
-		 hx-trigger="click"
 		 name={ action }
 		 ws-send>
 	</div>
@@ -37,14 +36,39 @@ templ clickableSquare(square int, action string, clases... string) {
 
 templ BoardWebsocket(gameID string) {
 	@layout.Layout("Play") {
-		<div class="h-full w-full" hx-ext="ws" ws-connect={ "/game/" + gameID } hx-target="#board" hx-swap-oob="outerHTML">
+		<div class="flex items-center h-full w-full p-4 bg-gray-800" hx-ext="ws" ws-connect={ "/game/" + gameID }>
 			<div id="board">Searching for game</div>
+			<div id="chat" name="chat" hx-target="#chat" hx-swap-oob="outerHTML" hx-trigger="load" ws-send></div>
+			// @Chat()
 		</div>
 	}
 }
 
+templ Message(message models.Message, userID string) {
+	<div id="messages" hx-swap-oob="beforeend">
+		<div class={ "flex my-2", templ.KV("justify-start", message.UserID != userID), templ.KV("justify-end", message.UserID == userID) }>
+			<div class={ "text-white p-3 rounded-lg max-w-[80%]", templ.KV("bg-blue-500", message.UserID != userID), templ.KV("bg-green-500", message.UserID == userID) }>
+				<span class="whitespace-pre-line break-all">{ message.Text }</span>
+			</div>
+		</div>
+	</div>
+}
+
+templ Chat(messages []models.Message, userID string) {
+	<div id="chat" class="flex flex-col ml-2 w-full h-full bg-gray-700 rounded h-[calc(min(80vh,80vw))]">
+		<div id="messages" class="overflow-y-auto h-full m-2">
+			for _, message := range messages {
+				@Message(message, userID)
+			}
+		</div>
+		<form class="h-14" name="message" ws-send>
+			<input name="chat_message" class="w-full h-full rounded-b bg-gray-600 text-white focus:outline-none"/>
+		</form>
+	</div>
+}
+
 templ Board(bs *models.BoardState) {
-	<div id="board" class={ "board", "m-4", templ.KV("flipped", bs != nil && bs.View == models.Black) } hx-trigger="click">
+	<div id="board" class={ "rounded board", templ.KV("flipped", bs != nil && bs.View == models.Black) } hx-target="#board" hx-swap-oob="outerHTML" hx-trigger="click">
 		for _, square := range bs.Highlighted {
 			<div class={ "highlight", fmt.Sprintf("square-%d", square) }></div>
 		}

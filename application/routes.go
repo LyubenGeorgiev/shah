@@ -23,6 +23,8 @@ func (app *App) loadRoutes() {
 	app.router.HandleFunc("/login", app.LoginFrom).Methods("GET")
 	app.router.HandleFunc("/login", app.Login).Methods("POST")
 
+	app.router.Handle("/logout", app.requiredAuthMiddleware(http.HandlerFunc(app.Logout))).Methods("GET")
+
 	app.router.Handle("/protected", app.requiredAuthMiddleware(http.HandlerFunc(protectedHandler)))
 
 	app.router.HandleFunc("/play", app.Manager.HandlePlay).Methods("GET")
@@ -30,6 +32,9 @@ func (app *App) loadRoutes() {
 	app.router.HandleFunc("/tournaments", app.Tournaments).Methods("GET")
 	app.router.HandleFunc("/game/{id}", app.Manager.HandleGame).Methods("GET")
 
+	app.router.Handle("/account", app.requiredAuthMiddleware(http.HandlerFunc(app.HandleAccount))).Methods("GET")
+	app.router.HandleFunc("/profiles/{id}", app.HandleProfiles).Methods("GET")
+	app.router.Handle("/upload", app.requiredAuthMiddleware(http.HandlerFunc(app.HandleUpload))).Methods("PUT")
 	app.router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		err := layout.Home().Render(r.Context(), w)
 		if err != nil {

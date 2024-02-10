@@ -14,3 +14,8 @@ type BoardState struct {
 	Captures    []int
 	View        Side
 }
+
+type Message struct {
+	Text   string
+	UserID string
+}

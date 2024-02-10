@@ -11,25 +11,30 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var (
+const (
 	// pongWait is how long we will await a pong response from client
 	pongWait     = 10 * time.Second
 	pingInterval = (pongWait * 9) / 10
 )
 
+type Output struct {
+	Type    string
+	Payload interface{}
+}
+
 type Client struct {
 	game    *Game
 	conn    *websocket.Conn
-	outputs chan *models.BoardState
+	outputs chan Output
 	Side    Side
 	ctx     context.Context
 }
 
-func NewClient(game *Game, conn *websocket.Conn, outputs chan *models.BoardState, side Side, ctx context.Context) *Client {
+func NewClient(game *Game, conn *websocket.Conn, side Side, ctx context.Context) *Client {
 	return &Client{
 		game:    game,
 		conn:    conn,
-		outputs: outputs,
+		outputs: make(chan Output),
 		Side:    side,
 		ctx:     ctx,
 	}
@@ -85,16 +90,43 @@ func (c *Client) ListenOutput() {
 
 	for {
 		select {
-		case bs, ok := <-c.outputs:
+		case output, ok := <-c.outputs:
 			if !ok {
 				fmt.Println("Outputs channel is closed.")
 				return
 			}
 
 			var buf bytes.Buffer
-			if err := boardview.Board(bs).Render(c.ctx, &buf); err != nil {
-				fmt.Printf("Error rendering board: %v\n", err)
-				continue
+			if output.Type == "board" {
+				bs, ok := output.Payload.(*models.BoardState)
+				if !ok {
+					continue
+				}
+
+				if err := boardview.Board(bs).Render(c.ctx, &buf); err != nil {
+					fmt.Printf("Error rendering board: %v\n", err)
+					continue
+				}
+			} else if output.Type == "chat" {
+				messages, ok := output.Payload.([]models.Message)
+				if !ok {
+					continue
+				}
+
+				if err := boardview.Chat(messages, c.game.getID(c)).Render(c.ctx, &buf); err != nil {
+					fmt.Printf("Error rendering chat: %v\n", err)
+					continue
+				}
+			} else if output.Type == "message" {
+				message, ok := output.Payload.(models.Message)
+				if !ok {
+					continue
+				}
+
+				if err := boardview.Message(message, c.game.getID(c)).Render(c.ctx, &buf); err != nil {
+					fmt.Printf("Error rendering chat: %v\n", err)
+					continue
+				}
 			}
 
 			if err := c.conn.WriteMessage(websocket.TextMessage, buf.Bytes()); err != nil {

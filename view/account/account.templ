@@ -1,0 +1,49 @@
+package account
+
+import (
+  "github.com/LyubenGeorgiev/shah/db/models"
+  "github.com/LyubenGeorgiev/shah/view/layout"
+  "strconv"
+)
+
+templ Account(u *models.User) {
+  @layout.Layout("Account") {
+    @UserInfo(u)
+	}
+}
+
+templ ProfilePicture(src string) {
+  <div id="profile_picture" class="w-20 h-20 rounded-full mb-2">
+      <img src={ src } alt="Icon" class="w-full h-full rounded-full"/>
+  </div>
+}
+
+templ UserInfo(u *models.User){
+  <div class="flex w-full justify-center items-start p-8 bg-gray-900 text-gray-100">
+    <div class="container mx-auto px-4 py-8 bg-gray-800 shadow-md rounded-md max-w-screen-md">
+      <div class="flex items-center">
+        <div class="flex flex-col items-center p-2">
+          @ProfilePicture(u.Image)
+          <form hx-encoding="multipart/form-data" hx-put="/upload" hx-swap="outerHTML" hx-target="#profile_picture">
+            <label for="file-upload" class="cursor-pointer rounded bg-green-600 px-4 py-2 text-gray-100 text-base">
+              Choose File
+            </label>
+            <input id="file-upload" type="file" name="file" class="hidden"/>
+            <button class="cursor-pointer rounded bg-blue-600 px-4 py-2 text-gray-100 text-base">
+              Upload
+            </button>
+          </form>
+        </div>
+        <div>
+          <div class="text-2xl font-bold">{u.Username}</div>
+          <div class="flex flex-col">
+            <div class="text-xl text-gray-400">Email: {u.Email}</div>
+            <div class="text-xl text-gray-400">Rating: {strconv.FormatFloat(u.Rating, 'f', 2, 64)}</div>
+            <div class="text-xl text-gray-400">Games Played: {strconv.Itoa(u.GamesPlayed)}</div>
+            <div class="text-xl text-gray-400">Games Won: {strconv.Itoa(u.GamesWon)}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
