@@ -136,6 +136,14 @@ func (g *Game) getTimer() *time.Timer {
 	return time.NewTimer(g.blackRemainingTime)
 }
 
+func (g *Game) getID(c *Client) string {
+	if g.white == c {
+		return g.whiteID
+	}
+
+	return g.blackID
+}
+
 func (g *Game) handleInputEvents(ctx context.Context, moves chan<- Move) {
 	var selected square
 	var legalMoves *Moves
@@ -151,8 +159,8 @@ func (g *Game) handleInputEvents(ctx context.Context, moves chan<- Move) {
 				UpdateClient(event.Client, Output{Type: event.Action, Payload: []models.Message{}})
 				continue
 			} else if event.Action == "message" {
-				UpdateClient(event.Client, Output{Type: event.Action, Payload: models.Message{Text: event.Message, IsFromOpponent: true}})
-				UpdateClient(event.Client, Output{Type: event.Action, Payload: models.Message{Text: event.Message, IsFromOpponent: false}})
+				UpdateClient(g.white, Output{Type: event.Action, Payload: models.Message{Text: event.Message, UserID: g.getID(event.Client)}})
+				UpdateClient(g.black, Output{Type: event.Action, Payload: models.Message{Text: event.Message, UserID: g.getID(event.Client)}})
 				continue
 			}
 

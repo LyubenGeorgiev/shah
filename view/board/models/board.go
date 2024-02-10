@@ -16,6 +16,6 @@ type BoardState struct {
 }
 
 type Message struct {
-	Text           string
-	IsFromOpponent bool
+	Text   string
+	UserID string
 }

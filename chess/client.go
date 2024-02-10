@@ -113,7 +113,7 @@ func (c *Client) ListenOutput() {
 					continue
 				}
 
-				if err := boardview.Chat(messages).Render(c.ctx, &buf); err != nil {
+				if err := boardview.Chat(messages, c.game.getID(c)).Render(c.ctx, &buf); err != nil {
 					fmt.Printf("Error rendering chat: %v\n", err)
 					continue
 				}
@@ -123,7 +123,7 @@ func (c *Client) ListenOutput() {
 					continue
 				}
 
-				if err := boardview.Message(message).Render(c.ctx, &buf); err != nil {
+				if err := boardview.Message(message, c.game.getID(c)).Render(c.ctx, &buf); err != nil {
 					fmt.Printf("Error rendering chat: %v\n", err)
 					continue
 				}

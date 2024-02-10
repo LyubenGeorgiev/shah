@@ -145,7 +145,7 @@ func BoardWebsocket(gameID string) templ.Component {
 	})
 }
 
-func Message(message models.Message) templ.Component {
+func Message(message models.Message, userID string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -162,7 +162,7 @@ func Message(message models.Message) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var7 = []any{"flex my-2", templ.KV("justify-start", message.IsFromOpponent), templ.KV("justify-end", !message.IsFromOpponent)}
+		var templ_7745c5c3_Var7 = []any{"flex my-2", templ.KV("justify-start", message.UserID != userID), templ.KV("justify-end", message.UserID == userID)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var7...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -179,7 +179,7 @@ func Message(message models.Message) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var8 = []any{"text-white p-3 rounded-lg max-w-[80%]", templ.KV("bg-blue-500", message.IsFromOpponent), templ.KV("bg-green-500", !message.IsFromOpponent)}
+		var templ_7745c5c3_Var8 = []any{"text-white p-3 rounded-lg max-w-[80%]", templ.KV("bg-blue-500", message.UserID != userID), templ.KV("bg-green-500", message.UserID == userID)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var8...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -216,7 +216,7 @@ func Message(message models.Message) templ.Component {
 	})
 }
 
-func Chat(messages []models.Message) templ.Component {
+func Chat(messages []models.Message, userID string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -234,7 +234,7 @@ func Chat(messages []models.Message) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		for _, message := range messages {
-			templ_7745c5c3_Err = Message(message).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = Message(message, userID).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
