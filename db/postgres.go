@@ -98,3 +98,7 @@ func (ps *PostgresStorage) FetchUsersByUsername(username string) ([]models.User,
 
 	return users, nil
 }
+
+func (ps *PostgresStorage) CreateGame(game *models.Game) error {
+	return ps.db.Create(game).Error
+}

@@ -1,17 +1,16 @@
 package models
 
-import "time"
+import (
+	"database/sql"
+
+	"github.com/lib/pq"
+	_ "gorm.io/driver/postgres"
+)
 
 type Game struct {
-	GameID          uint `gorm:"primaryKey"`
-	GameName        string
-	GameDescription string
-	GameType        string
-	GameCreatorID   uint
-	CreatedAt       time.Time
-	UpdatedAt       time.Time
-}
-
-func (Game) TableName() string {
-	return "games"
+	ID       string         `gorm:"type:uuid;primaryKey"`
+	WhiteID  string         `gorm:"type:text"`
+	BlackID  string         `gorm:"type:text"`
+	WinnerID sql.NullString `gorm:"type:text"`
+	Moves    pq.Int32Array  `gorm:"type:integer[]"`
 }

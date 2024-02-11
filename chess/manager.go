@@ -1,12 +1,14 @@
 package chess
 
 import (
+	"database/sql"
 	"log"
 	"net/http"
 	"sync"
 	"time"
 
 	"github.com/LyubenGeorgiev/shah/db"
+	"github.com/LyubenGeorgiev/shah/db/models"
 	"github.com/LyubenGeorgiev/shah/util"
 	boardview "github.com/LyubenGeorgiev/shah/view/board"
 	"github.com/gorilla/mux"
@@ -136,11 +138,17 @@ func (m *Manager) MakeGame(whiteID, blackID string) {
 	go game.Start()
 }
 
-func (m *Manager) RemoveGame(game *Game) {
+func (m *Manager) RemoveGame(game *Game, winnerID string) {
 	m.Lock()
 	defer m.Unlock()
 
 	if _, ok := m.games[game.GameID]; ok {
+		if winnerID != "" {
+			m.Storage.CreateGame(&models.Game{ID: game.GameID, WhiteID: game.whiteID, BlackID: game.blackID, WinnerID: sql.NullString{String: winnerID, Valid: true}, Moves: game.Moves})
+		} else {
+			m.Storage.CreateGame(&models.Game{ID: game.GameID, WhiteID: game.whiteID, BlackID: game.blackID, Moves: game.Moves})
+		}
+
 		delete(m.players, game.whiteID)
 		delete(m.players, game.blackID)
 		delete(m.games, game.GameID)
