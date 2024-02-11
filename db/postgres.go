@@ -60,6 +60,10 @@ func (ps *PostgresStorage) CreateUser(user *models.User) error {
 	return ps.db.Create(user).Error
 }
 
+func (ps *PostgresStorage) SaveUser(user *models.User) error {
+	return ps.db.Save(user).Error
+}
+
 func (ps *PostgresStorage) FindOneUser(email, password string) (uint, error) {
 	user := &models.User{}
 

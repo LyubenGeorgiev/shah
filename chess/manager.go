@@ -3,6 +3,7 @@ package chess
 import (
 	"database/sql"
 	"log"
+	"math"
 	"net/http"
 	"sync"
 	"time"
@@ -145,12 +146,54 @@ func (m *Manager) RemoveGame(game *Game, winnerID string) {
 	if _, ok := m.games[game.GameID]; ok {
 		if winnerID != "" {
 			m.Storage.CreateGame(&models.Game{ID: game.GameID, WhiteID: game.whiteID, BlackID: game.blackID, WinnerID: sql.NullString{String: winnerID, Valid: true}, Moves: game.Moves})
+			if winnerID == game.whiteID {
+				m.UpdateRating(game.whiteID, game.blackID, false)
+			} else {
+				m.UpdateRating(game.blackID, game.whiteID, false)
+			}
 		} else {
 			m.Storage.CreateGame(&models.Game{ID: game.GameID, WhiteID: game.whiteID, BlackID: game.blackID, Moves: game.Moves})
+			m.UpdateRating(game.whiteID, game.blackID, true)
 		}
 
 		delete(m.players, game.whiteID)
 		delete(m.players, game.blackID)
 		delete(m.games, game.GameID)
 	}
+}
+
+func (m *Manager) UpdateRating(winnerID, loserID string, isDraw bool) {
+	winner, _ := m.Storage.FindByUserID(winnerID)
+	loser, _ := m.Storage.FindByUserID(loserID)
+
+	KFactor := 32.0
+
+	// Calculate expected scores
+	expectedScore1 := 1.0 / (1.0 + math.Pow(10, (loser.Rating-winner.Rating)/400.0))
+	expectedScore2 := 1.0 / (1.0 + math.Pow(10, (winner.Rating-loser.Rating)/400.0))
+
+	// If it's a draw, adjust ratings based on the expected scores
+	if isDraw {
+		// Adjust rating for player 1
+		winner.Rating += KFactor * (0.5 - expectedScore1)
+		// Adjust rating for player 2
+		loser.Rating += KFactor * (0.5 - expectedScore2)
+	} else {
+		// Calculate the change in ratings for a decisive result
+		delta1 := KFactor * (1 - expectedScore1)
+		delta2 := KFactor * (0 - expectedScore2)
+
+		// Update ratings for players based on the result
+		winner.Rating += delta1
+		loser.Rating += delta2
+
+		winner.GamesWon++
+	}
+
+	// Update games played for both players
+	winner.GamesPlayed++
+	loser.GamesPlayed++
+
+	m.Storage.SaveUser(winner)
+	m.Storage.SaveUser(loser)
 }

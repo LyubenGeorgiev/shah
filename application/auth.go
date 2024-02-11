@@ -30,7 +30,7 @@ func (a *App) RegistrationFrom(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) Register(w http.ResponseWriter, r *http.Request) {
-	user := &models.User{}
+	user := &models.User{Rating: 1000}
 	err := json.NewDecoder(r.Body).Decode(user)
 	if err != nil {
 		fmt.Println(err)
