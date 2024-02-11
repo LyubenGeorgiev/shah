@@ -7,4 +7,5 @@ type Storage interface {
 	FindOneUser(email string, password string) (uint, error)
 	FindByUserID(userID string) (*models.User, error)
 	UpdateUserImage(userID string, image string) error
+	FetchUsersByUsername(username string) ([]models.User, error)
 }

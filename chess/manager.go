@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/LyubenGeorgiev/shah/db"
 	"github.com/LyubenGeorgiev/shah/util"
 	boardview "github.com/LyubenGeorgiev/shah/view/board"
 	"github.com/gorilla/mux"
@@ -22,6 +23,8 @@ type Manager struct {
 
 	// Queue for matchmaking
 	queue chan string
+
+	Storage db.Storage
 }
 
 var (
@@ -34,11 +37,12 @@ var (
 	}
 )
 
-func NewManager() *Manager {
+func NewManager(storage db.Storage) *Manager {
 	return &Manager{
 		games:   make(map[string]*Game),
 		players: make(map[string]string),
 		queue:   make(chan string),
+		Storage: storage,
 	}
 }
 

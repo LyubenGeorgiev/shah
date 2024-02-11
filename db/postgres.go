@@ -46,7 +46,7 @@ func NewPostgresStorage() *PostgresStorage {
 	}
 
 	// AutoMigrate will create tables based on provided structs
-	err = db.AutoMigrate(&models.Game{}, &models.Tournament{}, &models.User{})
+	err = db.AutoMigrate(&models.Game{}, &models.Tournament{}, &models.User{}, &models.News{})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -88,4 +88,13 @@ func (ps *PostgresStorage) FindByUserID(userID string) (*models.User, error) {
 // UpdateUserImage updates the image of the user with the given ID
 func (ps *PostgresStorage) UpdateUserImage(userID string, image string) error {
 	return ps.db.Model(&models.User{}).Where("id = ?", userID).UpdateColumn("image", image).Error
+}
+
+func (ps *PostgresStorage) FetchUsersByUsername(username string) ([]models.User, error) {
+	var users []models.User
+	if err := ps.db.Limit(5).Where("username LIKE ?", fmt.Sprintf("%%%s%%", username)).Find(&users).Error; err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }
