@@ -22,7 +22,9 @@ func (app *App) HandleProfiles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	account.Account(user).Render(r.Context(), w)
+	curUserID, _ := util.GetUserID(r)
+
+	account.Account(user, userID == curUserID).Render(r.Context(), w)
 }
 
 func (app *App) HandleAccount(w http.ResponseWriter, r *http.Request) {

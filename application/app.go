@@ -16,7 +16,7 @@ type App struct {
 	router  *mux.Router
 	Storage db.Storage
 	Cache   cache.Cache
-	chess.Manager
+	Manager *chess.Manager
 }
 
 func New() *App {
@@ -24,8 +24,9 @@ func New() *App {
 		router:  mux.NewRouter().StrictSlash(true),
 		Storage: db.NewPostgresStorage(),
 		Cache:   cache.NewRedisCache(),
-		Manager: *chess.NewManager(),
 	}
+	app.Manager = chess.NewManager(app.Storage)
+
 	app.loadRoutes()
 
 	return app

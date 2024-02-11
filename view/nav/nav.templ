@@ -3,6 +3,8 @@ package nav
 import (
   "github.com/LyubenGeorgiev/shah/view/components"
   "github.com/LyubenGeorgiev/shah/view/util"
+  "github.com/LyubenGeorgiev/shah/db/models"
+  "fmt"
 )
 
 func colorStyles(active bool) string {
@@ -18,6 +20,17 @@ templ navbarElement(href, imageSrc, title string, active bool) {
     @components.Image(imageSrc, title, "h-6 w-6")
     <span class="ml-2 text-m font-medium">{ title }</span>
   </a>
+}
+
+templ SearchResults(users []models.User) {
+  for _, user := range users {
+    <li class="">
+      <a href={ templ.SafeURL("/profiles/" + fmt.Sprint(user.ID)) } class="flex items-center">
+        <img alt={ user.Username } src={ user.Image } class="w-5 h-5"/>
+        <span class="">{ user.Username }</span>
+      </a>
+    </li>
+  }
 }
 
 templ Template(active string) {
@@ -46,6 +59,9 @@ templ Template(active string) {
             <span class="ml-2 text-m font-medium">Messages</span>
             <span class="absolute top-0 left-0 w-2 h-2 mt-2 ml-2 bg-indigo-500 rounded-full"></span>
           </a>
+
+          <input id="search" class="flex w-full h-8 px-2 mt-2 rounded relative bg-gray-800" maxlength="32" name="keyword" placeholder="Search" type="text" hx-get="/search" hx-trigger="keyup changed delay:500ms" hx-target="#search-results" hx-swap="innerHTML"/>
+          <ul id="search-results" class="w-full mt-2"></ul>
         } else {
           // Login
           <a class={ "flex items-center w-full h-12 px-3 mt-2 rounded", colorStyles(active == "Login") } href="/login">

@@ -3,12 +3,12 @@ package chess
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
 	"github.com/LyubenGeorgiev/shah/view/board/models"
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 )
 
 type Game struct {
@@ -23,6 +23,8 @@ type Game struct {
 	inputs             chan *inputEvent
 	white              *Client
 	black              *Client
+	Moves              pq.Int32Array
+	Messages           []models.Message
 }
 
 func NewGame(manager *Manager, whiteID, blackID string, timeGiven time.Duration) *Game {
@@ -39,6 +41,8 @@ func NewGame(manager *Manager, whiteID, blackID string, timeGiven time.Duration)
 		inputs:             make(chan *inputEvent),
 		white:              nil,
 		black:              nil,
+		Moves:              pq.Int32Array{},
+		Messages:           []models.Message{},
 	}
 
 	return g
@@ -113,8 +117,7 @@ func (g *Game) Start() {
 
 		select {
 		case move := <-moves:
-			// TODO log the move somewhere
-			fmt.Println(move)
+			g.Moves = append(g.Moves, int32(move))
 		case <-timer.C:
 			cancel()
 			close(moves)
@@ -123,9 +126,22 @@ func (g *Game) Start() {
 		cancel()
 		timer.Stop()
 	}
-	// Game is over handle the winner
-	log.Println("Game", g.GameID, "won by", g.board.Side)
-	g.Manager.RemoveGame(g)
+
+	king := k
+	if g.board.Side == white {
+		king = K
+	}
+
+	// If king is in check current side lost otherwise it is a draw
+	if g.board.isSquareAttacked(square(g.board.Bitboards[king].GetLs1bIndex()), g.board.Side.opposite()) {
+		if g.board.Side == white {
+			g.Manager.RemoveGame(g, g.blackID)
+		} else {
+			g.Manager.RemoveGame(g, g.whiteID)
+		}
+	} else {
+		g.Manager.RemoveGame(g, "")
+	}
 }
 
 func (g *Game) getTimer() *time.Timer {
@@ -156,11 +172,13 @@ func (g *Game) handleInputEvents(ctx context.Context, moves chan<- Move) {
 			}
 
 			if event.Action == "chat" {
-				UpdateClient(event.Client, Output{Type: event.Action, Payload: []models.Message{}})
+				UpdateClient(event.Client, Output{Type: event.Action, Payload: g.Messages})
 				continue
 			} else if event.Action == "message" {
-				UpdateClient(g.white, Output{Type: event.Action, Payload: models.Message{Text: event.Message, UserID: g.getID(event.Client)}})
-				UpdateClient(g.black, Output{Type: event.Action, Payload: models.Message{Text: event.Message, UserID: g.getID(event.Client)}})
+				msg := models.Message{Text: event.Message, UserID: g.getID(event.Client)}
+				UpdateClient(g.white, Output{Type: event.Action, Payload: msg})
+				UpdateClient(g.black, Output{Type: event.Action, Payload: msg})
+				g.Messages = append(g.Messages, msg)
 				continue
 			}
 
