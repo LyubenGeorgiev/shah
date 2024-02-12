@@ -100,7 +100,7 @@ func (e *Engine) parsePosition(command []byte) {
 			e.RepetitionTable = append(e.RepetitionTable, e.HashKey)
 
 			// make move on the chess board
-			if !e.Board.makeMove(move, false) {
+			if !e.Board.MakeMove(move, false) {
 				fmt.Println("Failed at", moveToString(move))
 			}
 

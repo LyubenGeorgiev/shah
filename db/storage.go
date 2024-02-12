@@ -10,4 +10,5 @@ type Storage interface {
 	UpdateUserImage(userID string, image string) error
 	FetchUsersByUsername(username string) ([]models.User, error)
 	CreateGame(game *models.Game) error
+	GetGame(gameID string) (*models.Game, error)
 }

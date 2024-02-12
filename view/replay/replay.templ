@@ -1,0 +1,40 @@
+package replay
+
+import (
+	"github.com/LyubenGeorgiev/shah/view/layout"
+	"fmt"
+)
+
+type BoardState struct {
+	Pieces      map[int]string
+}
+
+templ ReplayLayout(bs *BoardState, gameID, ourID, opponentID string, movesPlayed, totalMoves int) {
+	@layout.Layout("Play") {
+		<div class="flex flex-col items-center h-full w-full p-4 bg-gray-800">
+			<div id="opponent" hx-get={ "/profilewidgets/" + opponentID } hx-target="#opponent" hx-swap="outerHTML" hx-trigger="load"></div>
+			@Replay(bs, gameID, ourID, opponentID, movesPlayed, totalMoves)
+			<div id="our" hx-get={ "/profilewidgets/" + ourID } hx-target="#our" hx-swap="outerHTML" hx-trigger="load"></div>
+		</div>
+	}
+}
+
+templ button(gameID, label string, movesPlayed, newMovesPlayed, limit int) {
+	<button class={"flex p-2 m-1 bg-gray-700 rounded-md text-gray-100 text-base", templ.KV("hover:bg-gray-600", movesPlayed != limit) } hx-get={ fmt.Sprintf("/replays/%s/%d", gameID, newMovesPlayed) } hx-target="#replay" hx-swap="outerHTML" disabled?={ movesPlayed == limit }>{ label }</button>
+}
+
+templ Replay(bs *BoardState, gameID, ourID, opponentID string, movesPlayed, totalMoves int) {
+	<div id="replay" class="flex items-center">
+		@button(gameID, "Prev", movesPlayed, movesPlayed - 1, 0)
+		@ReplayBoard(bs)
+		@button(gameID, "Next", movesPlayed, movesPlayed + 1, totalMoves)
+	</div>
+}
+
+templ ReplayBoard(bs *BoardState) {
+	<div id="board" class="rounded board">
+		for square, piece := range bs.Pieces {
+			<div class={ "piece", piece, fmt.Sprintf("square-%d", square) }></div>
+		}
+	</div>
+}

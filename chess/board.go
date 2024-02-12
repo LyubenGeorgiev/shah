@@ -734,8 +734,8 @@ func (board *Board) generateMoves(moves *Moves) {
 	}
 }
 
-// generate all moves
-func (board *Board) makeMove(move Move, capturesOnly bool) bool {
+// Tries to make a move
+func (board *Board) MakeMove(move Move, capturesOnly bool) bool {
 
 	if !capturesOnly { // All moves
 		// Save the board
@@ -901,7 +901,7 @@ func (board *Board) makeMove(move Move, capturesOnly bool) bool {
 
 		return true
 	} else if move.isCapture() { // Capture moves only
-		return board.makeMove(move, false)
+		return board.MakeMove(move, false)
 	}
 
 	return false
@@ -916,7 +916,7 @@ func (board *Board) GetLegalMoves(capturesOnly bool) *Moves {
 	for i := 0; i < moves.count; i++ {
 		boardCopy := *board
 
-		if board.makeMove(moves.moves[i], capturesOnly) {
+		if board.MakeMove(moves.moves[i], capturesOnly) {
 			moves.moves[legalCount] = moves.moves[i]
 			legalCount++
 			*board = boardCopy
@@ -944,4 +944,8 @@ func (m *Moves) FilterSelected(source square) *Moves {
 
 func (board *Board) Gameover() bool {
 	return board.GetLegalMoves(false).count > 0
+}
+
+func Startpos() Board {
+	return *NewBoadFromFen(STARTPOS_FEN)
 }

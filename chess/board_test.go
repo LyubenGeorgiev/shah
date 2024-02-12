@@ -29,7 +29,7 @@ func perftDriver(depth int) {
 		copy := *board
 
 		// make move
-		if !board.makeMove(moves.moves[i], false) {
+		if !board.MakeMove(moves.moves[i], false) {
 			// skip to the next move
 			continue
 		}

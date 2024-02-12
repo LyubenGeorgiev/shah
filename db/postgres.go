@@ -80,13 +80,12 @@ func (ps *PostgresStorage) FindOneUser(email, password string) (uint, error) {
 }
 
 func (ps *PostgresStorage) FindByUserID(userID string) (*models.User, error) {
-	user := &models.User{}
-
-	if err := ps.db.Where("id = ?", userID).First(user).Error; err != nil {
-		return nil, fmt.Errorf("Wrong email or password")
+	var user models.User
+	if err := ps.db.First(&user, userID).Error; err != nil {
+		return nil, err
 	}
 
-	return user, nil
+	return &user, nil
 }
 
 // UpdateUserImage updates the image of the user with the given ID
@@ -105,4 +104,13 @@ func (ps *PostgresStorage) FetchUsersByUsername(username string) ([]models.User,
 
 func (ps *PostgresStorage) CreateGame(game *models.Game) error {
 	return ps.db.Create(game).Error
+}
+
+func (ps *PostgresStorage) GetGame(gameID string) (*models.Game, error) {
+	var game models.Game
+	if err := ps.db.First(&game, "id = ?", gameID).Error; err != nil {
+		return nil, err
+	}
+
+	return &game, nil
 }

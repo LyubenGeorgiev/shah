@@ -32,6 +32,9 @@ func (app *App) loadRoutes() {
 	app.router.HandleFunc("/tournaments", app.Tournaments).Methods("GET")
 	app.router.HandleFunc("/game/{id}", app.Manager.HandleGame).Methods("GET")
 
+	app.router.HandleFunc("/replays/{gameID}", app.HandleReplays).Methods("GET")
+	app.router.HandleFunc("/replays/{gameID}/{move}", app.HandleReplaysMove).Methods("GET")
+
 	app.router.HandleFunc("/search", app.HandleSearch).Methods("GET")
 	app.router.HandleFunc("/profilewidgets/{id}", app.HandleProfilewidgets).Methods("GET")
 

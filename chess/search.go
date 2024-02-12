@@ -88,7 +88,7 @@ func (e *Engine) quiescence(alpha, beta int) int {
 		e.ply++
 
 		// make sure to make only legal moves
-		if !e.makeMove(moves.moves[count], true) {
+		if !e.MakeMove(moves.moves[count], true) {
 			// decrement ply
 			e.ply--
 
@@ -284,7 +284,7 @@ func (e *Engine) negamax(alpha, beta, depth int) int {
 		e.RepetitionTable = append(e.RepetitionTable, e.HashKey)
 
 		// make sure to make only legal moves
-		if !e.makeMove(moves.moves[count], false) {
+		if !e.MakeMove(moves.moves[count], false) {
 			// decrement ply
 			e.ply--
 
