@@ -5,6 +5,7 @@ import (
 
 	"github.com/LyubenGeorgiev/shah/util"
 	"github.com/LyubenGeorgiev/shah/view/account"
+	components "github.com/LyubenGeorgiev/shah/view/board"
 	"github.com/gorilla/mux"
 
 	"github.com/LyubenGeorgiev/shah/db"
@@ -78,4 +79,17 @@ func (app *App) HandleUpload(w http.ResponseWriter, r *http.Request) {
 	}
 
 	account.ProfilePicture(encodedFile).Render(r.Context(), w)
+}
+
+// profilewidgets
+func (app *App) HandleProfilewidgets(w http.ResponseWriter, r *http.Request) {
+	userID := mux.Vars(r)["id"]
+
+	user, err := app.Storage.FindByUserID(userID)
+	if err != nil {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
+	}
+
+	components.Profilewidget(user).Render(r.Context(), w)
 }

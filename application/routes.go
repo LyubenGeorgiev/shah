@@ -33,6 +33,7 @@ func (app *App) loadRoutes() {
 	app.router.HandleFunc("/game/{id}", app.Manager.HandleGame).Methods("GET")
 
 	app.router.HandleFunc("/search", app.HandleSearch).Methods("GET")
+	app.router.HandleFunc("/profilewidgets/{id}", app.HandleProfilewidgets).Methods("GET")
 
 	app.router.Handle("/account", app.requiredAuthMiddleware(http.HandlerFunc(app.HandleAccount))).Methods("GET")
 	app.router.HandleFunc("/profiles/{id}", app.HandleProfiles).Methods("GET")

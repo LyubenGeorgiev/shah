@@ -2,6 +2,7 @@ package components
 
 import (
 	"github.com/LyubenGeorgiev/shah/view/board/models"
+	dbmodels "github.com/LyubenGeorgiev/shah/db/models"
 	"github.com/LyubenGeorgiev/shah/view/layout"
 	"fmt"
 	"strings"
@@ -34,12 +35,15 @@ templ clickableSquare(square int, action string, clases... string) {
 	</div>
 }
 
-templ BoardWebsocket(gameID string) {
+templ BoardWebsocket(gameID, ourID, opponentID string) {
 	@layout.Layout("Play") {
 		<div class="flex items-center h-full w-full p-4 bg-gray-800" hx-ext="ws" ws-connect={ "/game/" + gameID }>
-			<div id="board">Searching for game</div>
-			<div id="chat" name="chat" hx-target="#chat" hx-swap-oob="outerHTML" hx-trigger="load" ws-send></div>
-			// @Chat()
+			<div class="flex flex-col">
+				<div id="opponent" hx-get={ "/profilewidgets/" + opponentID } hx-target="#opponent" hx-swap="outerHTML" hx-trigger="load"></div>
+				<div id="board">Searching for game</div>
+				<div id="our" hx-get={ "/profilewidgets/" + ourID } hx-target="#our" hx-swap="outerHTML" hx-trigger="load"></div>
+			</div>
+			<div id="chat" name="chat" hx-target="#chat" hx-trigger="load" ws-send></div>
 		</div>
 	}
 }
@@ -51,6 +55,15 @@ templ Message(message models.Message, userID string) {
 				<span class="whitespace-pre-line break-all">{ message.Text }</span>
 			</div>
 		</div>
+	</div>
+}
+
+templ Profilewidget(user *dbmodels.User) {
+	<div class="h-[calc(min(10vh,10vw))] flex p-2">
+		<a href={ templ.SafeURL("/profiles/" + fmt.Sprint(user.ID)) } class="flex p-2 h-full w-auto items-center rounded-md bg-gray-700">
+			<img alt={ user.Username } src={ user.Image } class="h-full object-contain"/>
+			<span class="ml-2 text-gray-200 text-base">{ fmt.Sprintf("%s (%d)", user.Username, int(user.Rating)) }</span>
+		</a>
 	</div>
 }
 
