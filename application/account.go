@@ -2,6 +2,7 @@ package application
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/LyubenGeorgiev/shah/util"
 	"github.com/LyubenGeorgiev/shah/view/account"
@@ -92,4 +93,21 @@ func (app *App) HandleProfilewidgets(w http.ResponseWriter, r *http.Request) {
 	}
 
 	components.Profilewidget(user).Render(r.Context(), w)
+}
+
+func (app *App) HandleMatchHistory(w http.ResponseWriter, r *http.Request) {
+	userID := mux.Vars(r)["userID"]
+	page, err := strconv.Atoi(mux.Vars(r)["page"])
+	if err != nil {
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
+	games, err := app.Storage.GetMatchHistoryGames(userID, page, 10)
+	if err != nil {
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
+	account.ShowHistory(userID, page, games).Render(r.Context(), w)
 }

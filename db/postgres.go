@@ -115,16 +115,23 @@ func (ps *PostgresStorage) GetGame(gameID string) (*models.Game, error) {
 	return &game, nil
 }
 
-
 func (ps *PostgresStorage) CreateNews(news *models.News) error {
 	return ps.db.Create(news).Error
 }
 
-
 func (ps *PostgresStorage) GetAllNews() ([]models.News, error) {
-    var newsList []models.News
-    if err := ps.db.Find(&newsList).Error; err != nil {
-        return nil, err
-    }
-    return newsList, nil
+	var newsList []models.News
+	if err := ps.db.Find(&newsList).Error; err != nil {
+		return nil, err
+	}
+	return newsList, nil
+}
+func (ps *PostgresStorage) GetMatchHistoryGames(userID string, page int, limit int) ([]models.Game, error) {
+	var games []models.Game
+
+	if err := ps.db.Limit(limit).Offset(page*limit).Where("white_id = ?", userID).Or("black_id = ?", userID).Order("created_at DESC").Find(&games).Error; err != nil {
+		return nil, err
+	}
+
+	return games, nil
 }

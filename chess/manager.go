@@ -61,7 +61,7 @@ func (m *Manager) HandleGame(w http.ResponseWriter, r *http.Request) {
 
 	// User is trying to access different game than his own
 	if gameID != m.GetUserGameID(userID) {
-		log.Println("Unknown user!", userID, "Error", err.Error())
+		log.Println("Unknown user!", userID)
 		http.Error(w, "Unknown user!", http.StatusUnauthorized)
 		return
 	}
