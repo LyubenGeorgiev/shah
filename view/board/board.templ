@@ -39,9 +39,13 @@ templ BoardWebsocket(gameID, ourID, opponentID string) {
 	@layout.Layout("Play") {
 		<div class="flex items-center h-full w-full p-4 bg-gray-800" hx-ext="ws" ws-connect={ "/game/" + gameID }>
 			<div class="flex flex-col">
-				<div id="opponent" hx-get={ "/profilewidgets/" + opponentID } hx-target="#opponent" hx-swap="outerHTML" hx-trigger="load"></div>
+				<div class="flex text-gray-100">
+					<div id="opponent" hx-get={ "/profilewidgets/" + opponentID } hx-target="#opponent" hx-swap="outerHTML" hx-trigger="load"></div>
+				</div>
 				<div id="board">Searching for game</div>
-				<div id="our" hx-get={ "/profilewidgets/" + ourID } hx-target="#our" hx-swap="outerHTML" hx-trigger="load"></div>
+				<div class="flex text-gray-100">
+					<div id="our" hx-get={ "/profilewidgets/" + ourID } hx-target="#our" hx-swap="outerHTML" hx-trigger="load"></div>
+				</div>
 			</div>
 			<div id="chat" name="chat" hx-target="#chat" hx-trigger="load" ws-send></div>
 		</div>

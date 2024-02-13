@@ -117,7 +117,7 @@ func BoardWebsocket(gameID, ourID, opponentID string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div class=\"flex flex-col\"><div id=\"opponent\" hx-get=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div class=\"flex flex-col\"><div class=\"flex text-gray-100\"><div id=\"opponent\" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -125,7 +125,7 @@ func BoardWebsocket(gameID, ourID, opponentID string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#opponent\" hx-swap=\"outerHTML\" hx-trigger=\"load\"></div><div id=\"board\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#opponent\" hx-swap=\"outerHTML\" hx-trigger=\"load\"></div></div><div id=\"board\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -134,7 +134,7 @@ func BoardWebsocket(gameID, ourID, opponentID string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div id=\"our\" hx-get=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"flex text-gray-100\"><div id=\"our\" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -142,7 +142,7 @@ func BoardWebsocket(gameID, ourID, opponentID string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#our\" hx-swap=\"outerHTML\" hx-trigger=\"load\"></div></div><div id=\"chat\" name=\"chat\" hx-target=\"#chat\" hx-trigger=\"load\" ws-send></div></div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#our\" hx-swap=\"outerHTML\" hx-trigger=\"load\"></div></div></div><div id=\"chat\" name=\"chat\" hx-target=\"#chat\" hx-trigger=\"load\" ws-send></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -216,7 +216,7 @@ func Message(message models.Message, userID string) templ.Component {
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(message.Text)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `board/board.templ`, Line: 54, Col: 62}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `board/board.templ`, Line: 58, Col: 62}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -278,7 +278,7 @@ func Profilewidget(user *dbmodels.User) templ.Component {
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%s (%d)", user.Username, int(user.Rating)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `board/board.templ`, Line: 64, Col: 116}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `board/board.templ`, Line: 68, Col: 116}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {

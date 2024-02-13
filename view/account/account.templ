@@ -37,7 +37,7 @@ templ ShowHistory(userID string, page int, games []models.Game) {
     }
 
     if len(games) > 0 {
-      <div hx-get={ fmt.Sprintf("/history/%s/%d", userID, page + 1) } hx-swap="outerHTML" hx-target="this" hx-trigger="revealed"></div>
+      <div class="flex" hx-get={ fmt.Sprintf("/history/%s/%d", userID, page + 1) } hx-swap="outerHTML" hx-target="this" hx-trigger="intersect once"></div>
     }
 }
 
@@ -73,7 +73,7 @@ templ UserInfo(u *models.User, editable bool) {
 
     // Match history
     <div class="flex flex-col items-start rounded bg-gray-800 p-2 mt-2 overflow-y-auto">
-      <div hx-get={ fmt.Sprintf("/history/%d/0", u.ID) } hx-swap="outerHTML" hx-target="this" hx-trigger="revealed"></div>
+      <div hx-get={ fmt.Sprintf("/history/%d/0", u.ID) } hx-swap="outerHTML" hx-target="this" hx-trigger="load"></div>
     </div>
   </div>
 }
