@@ -34,6 +34,33 @@ func (app *App) HandleLoadChats(w http.ResponseWriter, r *http.Request) {
 	messages.ShowChats(page, chatsIDs).Render(r.Context(), w)
 }
 
+func (app *App) HandleAllLoadChats(w http.ResponseWriter, r *http.Request) {
+	userID, err := util.GetUserID(r)
+	if err != nil || userID == "" {
+		http.Error(w, "Unknown user!", http.StatusUnauthorized)
+		return
+	}
+
+	page, err := strconv.Atoi(mux.Vars(r)["page"])
+	if err != nil {
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
+	users, err := app.Storage.GetAllUsers(page, 10)
+	if err != nil {
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
+	chatsIDs := []uint{}
+	for _, user := range users {
+		chatsIDs = append(chatsIDs, user.ID)
+	}
+
+	messages.ShowChats(page, chatsIDs).Render(r.Context(), w)
+}
+
 func (app *App) HandleMessages(w http.ResponseWriter, r *http.Request) {
 	userID1, err := util.GetUserID(r)
 	if err != nil || userID1 == "" {

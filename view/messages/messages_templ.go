@@ -308,7 +308,7 @@ func Layout() templ.Component {
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex h-full w-full bg-gray-900\"><div class=\"flex flex-col overflow-y-auto\" hx-target=\"#chat\" hx-swap=\"innerHTML\"><div class=\"flex\" hx-get=\"/loadchats/0\" hx-swap=\"outerHTML\" hx-target=\"this\" hx-trigger=\"load\"></div><div class=\"flex\" hx-get=\"/loadallchats/0\" hx-swap=\"outerHTML\" hx-target=\"this\" hx-trigger=\"load\"></div></div><div id=\"chat\" class=\"flex flex-col ml-2 w-full h-full bg-gray-700 rounded h-full\"></div></div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex h-full w-full bg-gray-900\"><div class=\"flex flex-col overflow-y-auto\" hx-target=\"#chat\" hx-swap=\"innerHTML\"><div class=\"flex\" hx-get=\"/loadchats/0\" hx-swap=\"outerHTML\" hx-target=\"this\" hx-trigger=\"load\"></div><div class=\"flex flex-col border-t border-gray-600\"><div class=\"flex\" hx-get=\"/loadallchats/0\" hx-swap=\"outerHTML\" hx-target=\"this\" hx-trigger=\"load\"></div></div></div><div id=\"chat\" class=\"flex flex-col ml-2 w-full h-full bg-gray-700 rounded h-full\"></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -202,12 +202,12 @@ func Template(active string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = navbarElement("/news", "/static/images/news.jpg", "News", active == "News").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = navbarElement("/news", "/static/images/news.png", "News", active == "News").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if util.IsAdminUser(ctx) {
-			templ_7745c5c3_Err = navbarElement("/users", "/static/images/users.jpg", "Users", active == "Users").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = navbarElement("/users", "/static/images/users.png", "Users", active == "Users").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

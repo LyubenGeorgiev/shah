@@ -68,7 +68,9 @@ templ Layout() {
     <div class="flex h-full w-full bg-gray-900">
       <div class="flex flex-col overflow-y-auto" hx-target="#chat" hx-swap="innerHTML">
         <div class="flex" hx-get="/loadchats/0" hx-swap="outerHTML" hx-target="this" hx-trigger="load"></div>
-        <div class="flex" hx-get="/loadallchats/0" hx-swap="outerHTML" hx-target="this" hx-trigger="load"></div>
+        <div class="flex flex-col border-t border-gray-600">
+          <div class="flex" hx-get="/loadallchats/0" hx-swap="outerHTML" hx-target="this" hx-trigger="load"></div>
+        </div>
       </div>
 
       <div id="chat" class="flex flex-col ml-2 w-full h-full bg-gray-700 rounded h-full"></div>

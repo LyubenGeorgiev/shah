@@ -143,7 +143,7 @@ func (ps *PostgresStorage) CreateMessage(msg *models.Message) error {
 
 func (ps *PostgresStorage) GetRecentChatsUserIDs(userID string, page int, limit int) ([]uint, error) {
 	var msgs []models.Message
-	err := ps.db.Raw("select DISTINCT LEAST(\"from\", \"to\") as from, GREATEST(\"from\", \"to\") as to, created_at FROM messages where \"from\" = ? or \"to\" = ? order by created_at DESC limit ? offset ?", userID, userID, limit, page*limit).Scan(&msgs).Error
+	err := ps.db.Raw("select DISTINCT LEAST(\"from\", \"to\") as from, GREATEST(\"from\", \"to\") as to FROM (select \"from\", \"to\", \"created_at\" from messages order by created_at DESC) where \"from\" = ? or \"to\" = ? limit ? offset ?", userID, userID, limit, page*limit).Scan(&msgs).Error
 	if err != nil {
 		return nil, err
 	}
@@ -173,34 +173,32 @@ func (ps *PostgresStorage) GetRecentMessagesWith(userID1, userID2 string, page i
 }
 
 func (ps *PostgresStorage) GetAllUsers(page, limit int) ([]models.User, error) {
-    var users []models.User
-    offset := page * limit
-    if err := ps.db.Limit(limit).Offset(offset).Find(&users).Error; err != nil {
-        return nil, err
-    }
-    return users, nil
+	var users []models.User
+	offset := page * limit
+	if err := ps.db.Limit(limit).Offset(offset).Find(&users).Error; err != nil {
+		return nil, err
+	}
+	return users, nil
 }
-
 
 func (ps *PostgresStorage) DeleteUserByID(userID uint) error {
-    if err := ps.db.Delete(&models.User{}, userID).Error; err != nil {
-        return err
-    }
-    return nil
+	if err := ps.db.Delete(&models.User{}, userID).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
-
 func (ps *PostgresStorage) UpdateUser(userID uint, role string) error {
-    user := &models.User{}
-    // Retrieve the user by userID
-    if err := ps.db.First(user, userID).Error; err != nil {
-        return err
-    }
-    // Update the user's role
-    user.Role = role
-    // Save the changes to the database
-    if err := ps.db.Save(user).Error; err != nil {
-        return err
-    }
-    return nil
+	user := &models.User{}
+	// Retrieve the user by userID
+	if err := ps.db.First(user, userID).Error; err != nil {
+		return err
+	}
+	// Update the user's role
+	user.Role = role
+	// Save the changes to the database
+	if err := ps.db.Save(user).Error; err != nil {
+		return err
+	}
+	return nil
 }

@@ -11,7 +11,7 @@ func (app *App) loadRoutes() {
 	app.router.PathPrefix("/static/css/").Handler(http.StripPrefix("/static/css/", http.FileServer(http.Dir("static/css"))))
 	app.router.PathPrefix("/static/images/").Handler(http.StripPrefix("/static/images/", http.FileServer(http.Dir("static/images"))))
 
-	app.router.Use(app.authMiddleware)
+	app.router.Use(app.adminAndAuthMiddleware)
 
 	app.router.HandleFunc("/register", app.RegistrationFrom).Methods("GET")
 	app.router.HandleFunc("/register", app.Register).Methods("POST")
@@ -38,14 +38,15 @@ func (app *App) loadRoutes() {
 
 	app.router.HandleFunc("/messages", app.HandleChatsLayout).Methods("GET")
 	app.router.HandleFunc("/loadchats/{page}", app.HandleLoadChats).Methods("GET")
+	app.router.HandleFunc("/loadallchats/{page}", app.HandleAllLoadChats).Methods("GET")
 	app.router.HandleFunc("/messages/{userID}/{page}", app.HandleMessages).Methods("GET")
 	app.router.HandleFunc("/chats/{userID}", app.HandleChats).Methods("GET")
 	app.router.HandleFunc("/chats/{userID}", app.HandleChatsWrite).Methods("POST")
 
-	app.router.HandleFunc("/users/{page}", app.HandleUsers).Methods("GET")
-	app.router.HandleFunc("/users", app.HandleUsersShow).Methods("GET")
-	app.router.HandleFunc("/deleteUser/{id}", app.HandleDeleteUser).Methods("POST")
-	app.router.HandleFunc("/updateRole/{role}/{id}", app.HandleUpdateRole).Methods("PUT")
+	app.router.Handle("/users/{page}", app.requiredAdminRole(http.HandlerFunc(app.HandleUsers))).Methods("GET")
+	app.router.Handle("/users", app.requiredAdminRole(http.HandlerFunc(app.HandleUsersShow))).Methods("GET")
+	app.router.Handle("/deleteUser/{id}", app.requiredAdminRole(http.HandlerFunc(app.HandleDeleteUser))).Methods("POST")
+	app.router.Handle("/updateRole/{role}/{id}", app.requiredAdminRole(http.HandlerFunc(app.HandleUpdateRole))).Methods("PUT")
 	app.router.HandleFunc("/search", app.HandleSearch).Methods("GET")
 	app.router.HandleFunc("/profilewidgets/{id}", app.HandleProfilewidgets).Methods("GET")
 
