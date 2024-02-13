@@ -46,7 +46,7 @@ func NewPostgresStorage() *PostgresStorage {
 	}
 
 	// AutoMigrate will create tables based on provided structs
-	err = db.AutoMigrate(&models.Game{}, &models.Tournament{}, &models.User{}, &models.News{})
+	err = db.AutoMigrate(&models.Game{}, &models.Tournament{}, &models.User{}, &models.News{}, &models.Message{})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -135,4 +135,39 @@ func (ps *PostgresStorage) GetMatchHistoryGames(userID string, page int, limit i
 	}
 
 	return games, nil
+}
+
+func (ps *PostgresStorage) CreateMessage(msg *models.Message) error {
+	return ps.db.Create(msg).Error
+}
+
+func (ps *PostgresStorage) GetRecentChatsUserIDs(userID string, page int, limit int) ([]uint, error) {
+	var msgs []models.Message
+	err := ps.db.Raw("select DISTINCT LEAST(\"from\", \"to\") as from, GREATEST(\"from\", \"to\") as to, created_at FROM messages where \"from\" = ? or \"to\" = ? order by created_at DESC limit ? offset ?", userID, userID, limit, page*limit).Scan(&msgs).Error
+	if err != nil {
+		return nil, err
+	}
+
+	res := []uint{}
+	user, _ := strconv.ParseInt(userID, 10, 64)
+
+	for _, msg := range msgs {
+		if int64(msg.From) == user {
+			res = append(res, msg.To)
+		} else {
+			res = append(res, msg.From)
+		}
+	}
+
+	return res, nil
+}
+
+func (ps *PostgresStorage) GetRecentMessagesWith(userID1, userID2 string, page int, limit int) ([]models.Message, error) {
+	var msgs []models.Message
+	err := ps.db.Raw("select * FROM messages where (\"from\" = ? and \"to\" = ?) or (\"from\" = ? and \"to\" = ?) order by created_at DESC limit ? offset ?", userID1, userID2, userID2, userID1, limit, page*limit).Scan(&msgs).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return msgs, nil
 }

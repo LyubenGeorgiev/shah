@@ -167,6 +167,23 @@ func (a *App) requiredAuthMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+func (a *App) requiredAdminRole(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		userID, err := util.GetUserID(r)
+		if err != nil {
+			http.Error(w, "Unauthorized access", http.StatusUnauthorized)
+			return
+		}
+
+		user, err := a.Storage.FindByUserID(userID)
+		if err != nil || user.Role != "ADMIN" {
+			http.Error(w, "Unauthorized access", http.StatusUnauthorized)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
 func (a *App) Logout(w http.ResponseWriter, r *http.Request) {
 	userID, err := util.GetUserID(r)
 	if err != nil || userID == "" {

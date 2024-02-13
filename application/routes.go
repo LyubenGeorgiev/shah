@@ -26,13 +26,21 @@ func (app *App) loadRoutes() {
 	app.router.HandleFunc("/computer/{gameID}", app.ComputerGame).Methods("GET")
 	app.router.HandleFunc("/tournaments", app.Tournaments).Methods("GET")
 	app.router.HandleFunc("/game/{id}", app.Manager.HandleGame).Methods("GET")
+
 	app.router.HandleFunc("/news", app.News).Methods("GET")
-	app.router.HandleFunc("/createNews", app.CreateNews).Methods("GET")
-	app.router.HandleFunc("/createNews", app.NewNews).Methods("POST")
+	app.router.Handle("/createNews", app.requiredAdminRole(http.HandlerFunc(app.CreateNews))).Methods("GET")
+	app.router.Handle("/createNews", app.requiredAdminRole(http.HandlerFunc(app.NewNews))).Methods("POST")
+
 	app.router.HandleFunc("/replays/{gameID}", app.HandleReplays).Methods("GET")
 	app.router.HandleFunc("/replays/{gameID}/{move}", app.HandleReplaysMove).Methods("GET")
 
 	app.router.HandleFunc("/history/{userID}/{page}", app.HandleMatchHistory).Methods("GET")
+
+	app.router.HandleFunc("/messages", app.HandleChatsLayout).Methods("GET")
+	app.router.HandleFunc("/loadchats/{page}", app.HandleLoadChats).Methods("GET")
+	app.router.HandleFunc("/messages/{userID}/{page}", app.HandleMessages).Methods("GET")
+	app.router.HandleFunc("/chats/{userID}", app.HandleChats).Methods("GET")
+	app.router.HandleFunc("/chats/{userID}", app.HandleChatsWrite).Methods("POST")
 
 	app.router.HandleFunc("/search", app.HandleSearch).Methods("GET")
 	app.router.HandleFunc("/profilewidgets/{id}", app.HandleProfilewidgets).Methods("GET")

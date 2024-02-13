@@ -14,4 +14,8 @@ type Storage interface {
 	CreateNews(*models.News) error
 	GetAllNews() ([]models.News, error)
 	GetMatchHistoryGames(userID string, page int, limit int) ([]models.Game, error)
+
+	CreateMessage(msg *models.Message) error
+	GetRecentChatsUserIDs(userID string, page int, limit int) ([]uint, error)
+	GetRecentMessagesWith(userID1, userID2 string, page int, limit int) ([]models.Message, error)
 }
