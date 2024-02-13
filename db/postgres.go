@@ -126,6 +126,7 @@ func (ps *PostgresStorage) GetAllNews() ([]models.News, error) {
 	}
 	return newsList, nil
 }
+
 func (ps *PostgresStorage) GetMatchHistoryGames(userID string, page int, limit int) ([]models.Game, error) {
 	var games []models.Game
 

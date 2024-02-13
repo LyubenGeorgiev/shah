@@ -2,12 +2,12 @@ package application
 
 import (
 	"encoding/base64" // For base64 encoding and decoding
-	"io" // For reading file content
+	"io"              // For reading file content
 	"net/http"
 
 	"github.com/LyubenGeorgiev/shah/db/models"
-	"github.com/LyubenGeorgiev/shah/view/news"
 	"github.com/LyubenGeorgiev/shah/util"
+	"github.com/LyubenGeorgiev/shah/view/news"
 )
 
 func (a *App) News(w http.ResponseWriter, r *http.Request) {
@@ -26,7 +26,6 @@ func (a *App) News(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	isAdmin := user.Role == "ADMIN"
 
 	if err != nil {
@@ -39,15 +38,12 @@ func (a *App) News(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to retrieve news items", http.StatusInternalServerError)
 		return
 	}
-	news.News(newsList , isAdmin).Render(r.Context(), w)
+	news.News(newsList, isAdmin).Render(r.Context(), w)
 }
-
 
 func (a *App) CreateNews(w http.ResponseWriter, r *http.Request) {
-
 	news.CreateNews().Render(r.Context(), w)
 }
-
 
 func (app *App) NewNews(w http.ResponseWriter, r *http.Request) {
 	// Parse the multipart form data
@@ -93,6 +89,6 @@ func (app *App) NewNews(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to update user image", http.StatusInternalServerError)
 		return
 	}
-	
+
 	w.Header().Set("HX-Location", "/news")
 }

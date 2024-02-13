@@ -6,36 +6,33 @@ import (
 
 )
 
-templ SingleNews(news *models.News){
-
-     <a href={templ.URL(news.URL)} class="bg-gray-800 rounded-lg overflow-hidden shadow-md transition duration-300 ease-in-out transform hover:scale-105 block">
-            <img src={news.Image} alt="News Image" class="w-full h-48 object-cover"/>
-            <div class="p-4">
-                <h2 class="text-lg font-bold mb-2">{news.Title}</h2>
-                <p class="text-sm">{news.Description}</p>
-            </div>
-        </a>
+templ SingleNews(news *models.News) {
+  <a href={templ.URL(news.URL)} class="bg-gray-800 rounded-lg overflow-hidden shadow-md transition duration-300 ease-in-out transform hover:scale-105 block">
+    <img src={news.Image} alt="News Image" class="w-full h-48 object-cover"/>
+    <div class="p-4">
+        <h2 class="text-lg font-bold mb-2">{news.Title}</h2>
+        <p class="text-sm">{news.Description}</p>
+    </div>
+  </a>
 }
 
-templ News (newsList []models.News , isAdmin bool){
+templ News(newsList []models.News , isAdmin bool) {
+  @layout.Layout("News") {
+    <div class="container mx-auto py-8">
+      <h1 class="text-2xl font-bold mb-4">Latest News</h1>
 
-@layout.Layout("News")
-
-<div class="container mx-auto py-8">
-    <h1 class="text-2xl font-bold mb-4">Latest News</h1>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <!-- News Box -->
         for _, news := range newsList {
-       @SingleNews(&news)
-    }
-    
-    </div>
-    if isAdmin {
-      <a href="/createNews" class="absolute bottom-8 right-8 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">+</a>
-}
-    </div>
+          @SingleNews(&news)
+        }
+      </div>
 
-
+      if isAdmin {
+        <a href="/createNews" class="absolute bottom-8 right-8 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">+</a>
+      }
+    </div>
+  }
 }
 
 

@@ -62,7 +62,7 @@ templ Profilewidget(user *dbmodels.User) {
 	<div class="h-[calc(min(10vh,10vw))] flex p-2">
 		<a href={ templ.SafeURL("/profiles/" + fmt.Sprint(user.ID)) } class="flex p-2 h-full w-auto items-center rounded-md bg-gray-700">
 			<img alt={ user.Username } src={ user.Image } class="h-full object-contain"/>
-			<span class="ml-2 text-gray-200 text-base">{ fmt.Sprintf("%s (%d)", user.Username, int(user.Rating)) }</span>
+			<span class="ml-2 text-gray-200 text-base text-inherit">{ fmt.Sprintf("%s (%d)", user.Username, int(user.Rating)) }</span>
 		</a>
 	</div>
 }

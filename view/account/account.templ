@@ -20,7 +20,15 @@ templ ProfilePicture(src string) {
 }
 
 templ ShowGame(game *models.Game) {
-  <a href={templ.SafeURL(fmt.Sprintf("/replays/%s", game.ID))}>buba</a>
+  <a class="flex items-center rounded m-2 bg-gray-600" href={templ.SafeURL(fmt.Sprintf("/replays/%s", game.ID))}>
+    <div class={ "flex", map[string]bool{"text-yellow-400": game.WinnerID.String != game.WhiteID && game.WinnerID.String != game.BlackID, "text-green-400": game.WinnerID.String == game.WhiteID, "text-red-400": game.WinnerID.String == game.BlackID} }>
+      <div hx-get={ "/profilewidgets/" + game.WhiteID } hx-target="this" hx-swap="outerHTML" hx-trigger="load"></div>
+    </div>
+    <span>VS</span>
+    <div class={ "flex", map[string]bool{"text-yellow-400": game.WinnerID.String != game.WhiteID && game.WinnerID.String != game.BlackID, "text-green-400": game.WinnerID.String == game.BlackID, "text-red-400": game.WinnerID.String == game.WhiteID} }>
+      <div hx-get={ "/profilewidgets/" + game.BlackID } hx-target="this" hx-swap="outerHTML" hx-trigger="load"></div>
+    </div>
+  </a>
 }
 
 templ ShowHistory(userID string, page int, games []models.Game) {
@@ -28,8 +36,8 @@ templ ShowHistory(userID string, page int, games []models.Game) {
       @ShowGame(&game)
     }
 
-    if len(games) >= 10 {
-      <div id="loader" hx-get={ fmt.Sprintf("/history/%s/%d", userID, page + 1) } hx-swap="outerHTML" hx-target="#loader" hx-trigger="revealed"></div>
+    if len(games) > 0 {
+      <div hx-get={ fmt.Sprintf("/history/%s/%d", userID, page + 1) } hx-swap="outerHTML" hx-target="this" hx-trigger="revealed"></div>
     }
 }
 
@@ -64,8 +72,8 @@ templ UserInfo(u *models.User, editable bool) {
     </div>
 
     // Match history
-    <div class="flex flex-col">
-      <div id="loader" hx-get={ fmt.Sprintf("/history/%d/0", u.ID) } hx-swap="outerHTML" hx-target="#loader" hx-trigger="revealed"></div>
+    <div class="flex flex-col items-start rounded bg-gray-700 p-2 mt-2 overflow-y-auto">
+      <div hx-get={ fmt.Sprintf("/history/%d/0", u.ID) } hx-swap="outerHTML" hx-target="this" hx-trigger="revealed"></div>
     </div>
   </div>
 }

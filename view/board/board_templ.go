@@ -271,14 +271,14 @@ func Profilewidget(user *dbmodels.User) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"h-full object-contain\"> <span class=\"ml-2 text-gray-200 text-base\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"h-full object-contain\"> <span class=\"ml-2 text-gray-200 text-base text-inherit\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%s (%d)", user.Username, int(user.Rating)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `board/board.templ`, Line: 64, Col: 103}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `board/board.templ`, Line: 64, Col: 116}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
