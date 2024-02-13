@@ -42,6 +42,10 @@ func (app *App) loadRoutes() {
 	app.router.HandleFunc("/chats/{userID}", app.HandleChats).Methods("GET")
 	app.router.HandleFunc("/chats/{userID}", app.HandleChatsWrite).Methods("POST")
 
+	app.router.HandleFunc("/users/{page}", app.HandleUsers).Methods("GET")
+	app.router.HandleFunc("/users", app.HandleUsersShow).Methods("GET")
+	app.router.HandleFunc("/deleteUser/{id}", app.HandleDeleteUser).Methods("POST")
+	app.router.HandleFunc("/updateRole/{role}/{id}", app.HandleUpdateRole).Methods("PUT")
 	app.router.HandleFunc("/search", app.HandleSearch).Methods("GET")
 	app.router.HandleFunc("/profilewidgets/{id}", app.HandleProfilewidgets).Methods("GET")
 

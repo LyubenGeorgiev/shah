@@ -171,3 +171,36 @@ func (ps *PostgresStorage) GetRecentMessagesWith(userID1, userID2 string, page i
 
 	return msgs, nil
 }
+
+func (ps *PostgresStorage) GetAllUsers(page, limit int) ([]models.User, error) {
+    var users []models.User
+    offset := page * limit
+    if err := ps.db.Limit(limit).Offset(offset).Find(&users).Error; err != nil {
+        return nil, err
+    }
+    return users, nil
+}
+
+
+func (ps *PostgresStorage) DeleteUserByID(userID uint) error {
+    if err := ps.db.Delete(&models.User{}, userID).Error; err != nil {
+        return err
+    }
+    return nil
+}
+
+
+func (ps *PostgresStorage) UpdateUser(userID uint, role string) error {
+    user := &models.User{}
+    // Retrieve the user by userID
+    if err := ps.db.First(user, userID).Error; err != nil {
+        return err
+    }
+    // Update the user's role
+    user.Role = role
+    // Save the changes to the database
+    if err := ps.db.Save(user).Error; err != nil {
+        return err
+    }
+    return nil
+}

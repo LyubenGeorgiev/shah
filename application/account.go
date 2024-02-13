@@ -111,3 +111,71 @@ func (app *App) HandleMatchHistory(w http.ResponseWriter, r *http.Request) {
 
 	account.ShowHistory(userID, page, games).Render(r.Context(), w)
 }
+
+
+func (app *App) HandleUsers(w http.ResponseWriter, r *http.Request) {
+	page, err := strconv.Atoi(mux.Vars(r)["page"])
+	if err != nil {
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
+	users, err := app.Storage.GetAllUsers(page, 10)
+	if err != nil {
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
+	account.ShowUsers( page, users).Render(r.Context(), w)
+}
+
+func(app  *App) HandleUsersShow(w http.ResponseWriter, r *http.Request){
+	account.UsersPage().Render(r.Context(),w)
+}
+
+func(app  *App) HandleDeleteUser(w http.ResponseWriter, r *http.Request){
+	id, err := strconv.ParseUint(mux.Vars(r)["id"] , 10, 64)
+
+	if err != nil {
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
+	err = app.Storage.DeleteUserByID(uint(id))
+
+	if err != nil {
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("HX-Location", "/users")
+
+
+
+}
+
+
+func(app  *App) HandleUpdateRole(w http.ResponseWriter, r *http.Request){
+	id, err := strconv.ParseUint(mux.Vars(r)["id"] , 10, 64)
+	
+	if err != nil {
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
+	role := mux.Vars(r)["role"]
+
+
+	err = app.Storage.UpdateUser(uint(id) ,role)
+
+	if err != nil {
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("HX-Location", "/users")
+
+
+
+}
+

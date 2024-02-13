@@ -66,6 +66,7 @@ templ UserInfo(u *models.User, editable bool) {
             <div class="text-xl text-gray-400">Rating: {strconv.FormatFloat(u.Rating, 'f', 2, 64)}</div>
             <div class="text-xl text-gray-400">Games Played: {strconv.Itoa(u.GamesPlayed)}</div>
             <div class="text-xl text-gray-400">Games Won: {strconv.Itoa(u.GamesWon)}</div>
+            <div class="text-xl text-gray-400">Role: {u.Role}</div>
           </div>
         </div>
       </div>
@@ -77,3 +78,53 @@ templ UserInfo(u *models.User, editable bool) {
     </div>
   </div>
 }
+
+
+templ UsersPage(){
+    @layout.Layout("Users") 
+  <div class="flex flex-col w-full p-8 bg-gray-900 text-gray-100 items-start">
+ <div class="" id="userListContainer">
+    <!-- This div will be replaced with the loaded user data -->
+    <div hx-get={ fmt.Sprintf("/users/0") } hx-swap="outerHTML" hx-target="#userListContainer" hx-trigger="load"></div>
+</div>
+</div>
+}
+
+templ ShowUser(user *models.User) {
+
+<div class={ "flex m-2 items-center bg-gray-800 rounded p-2" }>
+    <!-- Larger Profile Widget -->
+    <div class="w-64 h-64" hx-get={fmt.Sprintf("/profilewidgets/%d", user.ID)} hx-target="this" hx-swap="outerHTML" hx-trigger="load"></div>
+    
+    <div class="flex flex-col">
+    <div class="hover:cursor-pointer m-2 bg-gray-700 rounded p-2" hx-trigger="click"  hx-put={fmt.Sprintf("/updateRole/USER/%d", user.ID)}>
+      USER
+    </div>
+     <div class="hover:cursor-pointer m-2 bg-gray-700 rounded p-2" hx-trigger="click"  hx-put={fmt.Sprintf("/updateRole/ADMIN/%d", user.ID)}>
+      ADMIN
+    </div>
+    </div>
+<span class="htmx-indicator"></span>
+    
+    <!-- Delete Button -->
+    <button hx-post={fmt.Sprintf("/deleteUser/%d", user.ID)} hx-trigger="click" hx-target="this"
+        class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
+        Delete
+    </button>
+</div>
+
+
+  
+}
+
+templ ShowUsers( page int, users []models.User) {
+    for _, user := range users {
+      @ShowUser(&user)
+    }
+
+    if len(users) > 0 {
+      <div class="flex" hx-get={ fmt.Sprintf("/users/%d", page + 1) } hx-swap="outerHTML" hx-target="this" hx-trigger="intersect once"></div>
+    }
+}
+
+
