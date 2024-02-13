@@ -7,15 +7,11 @@ import (
 	"github.com/LyubenGeorgiev/shah/view/layout"
 )
 
-func protectedHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "This is a protected endpoint.")
-}
-
 func (app *App) loadRoutes() {
 	app.router.PathPrefix("/static/css/").Handler(http.StripPrefix("/static/css/", http.FileServer(http.Dir("static/css"))))
 	app.router.PathPrefix("/static/images/").Handler(http.StripPrefix("/static/images/", http.FileServer(http.Dir("static/images"))))
 
-	app.router.Use(app.authMiddleware)
+	app.router.Use(app.adminAndAuthMiddleware)
 
 	app.router.HandleFunc("/register", app.RegistrationFrom).Methods("GET")
 	app.router.HandleFunc("/register", app.Register).Methods("POST")
@@ -25,14 +21,34 @@ func (app *App) loadRoutes() {
 
 	app.router.Handle("/logout", app.requiredAuthMiddleware(http.HandlerFunc(app.Logout))).Methods("GET")
 
-	app.router.Handle("/protected", app.requiredAuthMiddleware(http.HandlerFunc(protectedHandler)))
-
 	app.router.HandleFunc("/play", app.Manager.HandlePlay).Methods("GET")
 	app.router.HandleFunc("/computer", app.Computer).Methods("GET")
+	app.router.HandleFunc("/computer/{gameID}", app.ComputerGame).Methods("GET")
 	app.router.HandleFunc("/tournaments", app.Tournaments).Methods("GET")
 	app.router.HandleFunc("/game/{id}", app.Manager.HandleGame).Methods("GET")
 
+	app.router.HandleFunc("/news", app.News).Methods("GET")
+	app.router.Handle("/createNews", app.requiredAdminRole(http.HandlerFunc(app.CreateNews))).Methods("GET")
+	app.router.Handle("/createNews", app.requiredAdminRole(http.HandlerFunc(app.NewNews))).Methods("POST")
+
+	app.router.HandleFunc("/replays/{gameID}", app.HandleReplays).Methods("GET")
+	app.router.HandleFunc("/replays/{gameID}/{move}", app.HandleReplaysMove).Methods("GET")
+
+	app.router.HandleFunc("/history/{userID}/{page}", app.HandleMatchHistory).Methods("GET")
+
+	app.router.HandleFunc("/messages", app.HandleChatsLayout).Methods("GET")
+	app.router.HandleFunc("/loadchats/{page}", app.HandleLoadChats).Methods("GET")
+	app.router.HandleFunc("/loadallchats/{page}", app.HandleAllLoadChats).Methods("GET")
+	app.router.HandleFunc("/messages/{userID}/{page}", app.HandleMessages).Methods("GET")
+	app.router.HandleFunc("/chats/{userID}", app.HandleChats).Methods("GET")
+	app.router.HandleFunc("/chats/{userID}", app.HandleChatsWrite).Methods("POST")
+
+	app.router.Handle("/users/{page}", app.requiredAdminRole(http.HandlerFunc(app.HandleUsers))).Methods("GET")
+	app.router.Handle("/users", app.requiredAdminRole(http.HandlerFunc(app.HandleUsersShow))).Methods("GET")
+	app.router.Handle("/deleteUser/{id}", app.requiredAdminRole(http.HandlerFunc(app.HandleDeleteUser))).Methods("POST")
+	app.router.Handle("/updateRole/{role}/{id}", app.requiredAdminRole(http.HandlerFunc(app.HandleUpdateRole))).Methods("PUT")
 	app.router.HandleFunc("/search", app.HandleSearch).Methods("GET")
+	app.router.HandleFunc("/profilewidgets/{id}", app.HandleProfilewidgets).Methods("GET")
 
 	app.router.Handle("/account", app.requiredAuthMiddleware(http.HandlerFunc(app.HandleAccount))).Methods("GET")
 	app.router.HandleFunc("/profiles/{id}", app.HandleProfiles).Methods("GET")

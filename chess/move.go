@@ -11,9 +11,19 @@ func (m Move) getSource() square {
 	return square(m & 0x3f)
 }
 
+// extract source square
+func (m Move) GetSource() int {
+	return int(m & 0x3f)
+}
+
 // extract target square
 func (m Move) getTarget() square {
 	return square(m >> 6 & 0x3f)
+}
+
+// extract target square
+func (m Move) GetTarget() int {
+	return int(m >> 6 & 0x3f)
 }
 
 // extract piece
@@ -28,6 +38,11 @@ func (m Move) getPromotionPiece() piece {
 
 // extract capture flag
 func (m Move) isCapture() bool {
+	return m>>20&1 > 0
+}
+
+// extract capture flag
+func (m Move) IsCapture() bool {
 	return m>>20&1 > 0
 }
 
@@ -54,6 +69,14 @@ type Moves struct {
 func (m *Moves) addMove(move Move) {
 	m.moves[m.count] = move
 	m.count++
+}
+
+func (m *Moves) Count() int {
+	return m.count
+}
+
+func (m *Moves) At(i int) Move {
+	return m.moves[i]
 }
 
 /*  =======================

@@ -1,6 +1,9 @@
 package chess
 
-import "math/bits"
+import (
+	"fmt"
+	"math/bits"
+)
 
 const (
 	not_a_file      Bitboard = 18374403900871474942
@@ -566,4 +569,11 @@ func (b Bitboard) GetLs1bIndex() int {
 
 func (b *Bitboard) PopLs1b() {
 	b.popBit(square(b.GetLs1bIndex()))
+}
+
+func (m Move) String() string {
+	return fmt.Sprintf("%v -> %v Piece:%q Promoted:%q Capture:%t Double:%t Enpassant:%t Castling:%t",
+		m.getSource(), m.getTarget(), pieceToChar[m.getPiece()], pieceToChar[m.getPromotionPiece()],
+		m.isCapture(), m.isDoublePawnPush(), m.isEnpassant(), m.isCastling(),
+	)
 }

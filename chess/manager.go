@@ -61,7 +61,7 @@ func (m *Manager) HandleGame(w http.ResponseWriter, r *http.Request) {
 
 	// User is trying to access different game than his own
 	if gameID != m.GetUserGameID(userID) {
-		log.Println("Unknown user!", userID, "Error", err.Error())
+		log.Println("Unknown user!", userID)
 		http.Error(w, "Unknown user!", http.StatusUnauthorized)
 		return
 	}
@@ -88,7 +88,12 @@ func (m *Manager) HandlePlay(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if gameID := m.GetUserGameID(userID); gameID != "" {
-		boardview.BoardWebsocket(gameID).Render(r.Context(), w)
+		game := m.GetGame(gameID)
+		if game.whiteID == userID {
+			boardview.BoardWebsocket(gameID, game.whiteID, game.blackID).Render(r.Context(), w)
+		} else {
+			boardview.BoardWebsocket(gameID, game.blackID, game.whiteID).Render(r.Context(), w)
+		}
 		return
 	}
 
@@ -100,7 +105,12 @@ func (m *Manager) HandlePlay(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if gameID := m.GetUserGameID(userID); gameID != "" {
-		boardview.BoardWebsocket(gameID).Render(r.Context(), w)
+		game := m.GetGame(gameID)
+		if game.whiteID == userID {
+			boardview.BoardWebsocket(gameID, game.whiteID, game.blackID).Render(r.Context(), w)
+		} else {
+			boardview.BoardWebsocket(gameID, game.blackID, game.whiteID).Render(r.Context(), w)
+		}
 		return
 	}
 }

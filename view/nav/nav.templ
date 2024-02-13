@@ -46,6 +46,10 @@ templ Template(active string) {
         @navbarElement("/play", "/static/images/play.svg", "Play", active == "Play")
         @navbarElement("/computer", "/static/images/computer.svg", "Computer", active == "Computer")
         @navbarElement("/tournaments", "/static/images/tournaments.png", "Tournaments", active == "Tournaments")
+        @navbarElement("/news", "/static/images/news.png", "News", active == "News")
+        if util.IsAdminUser(ctx){
+          @navbarElement("/users", "/static/images/users.png", "Users" , active == "Users")
+        }
       </div>
       
       // Lower part

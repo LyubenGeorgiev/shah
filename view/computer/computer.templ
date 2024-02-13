@@ -1,0 +1,99 @@
+package computer
+
+import (
+	"github.com/LyubenGeorgiev/shah/view/layout"
+  "fmt"
+  "strings"
+)
+
+type Side int
+
+const (
+	White Side = iota
+	Black
+)
+
+type BoardState struct {
+  GameID      string
+	Highlighted []int
+	Pieces      map[int]string
+	Moves       map[int]string
+	Captures    map[int]string
+  View        Side
+}
+
+var squareToString = [...]string{
+	"a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8",
+	"a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",
+	"a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6",
+	"a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5",
+	"a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4",
+	"a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3",
+	"a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2",
+	"a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",
+}
+
+templ Layout(userID string, bs *BoardState) {
+	@layout.Layout("Computer") {
+		<div class="flex items-center h-full w-full p-4 bg-gray-800">
+			<div class="flex flex-col">
+				<div class="flex text-gray-100">
+					<div class="h-[calc(min(10vh,10vw))] flex p-2">
+            <div class="flex p-2 h-full w-auto items-center rounded-md bg-gray-700">
+              <img alt="Computer" src="/static/images/computer.svg" class="h-full object-contain"/>
+              <span class="ml-2 text-gray-200 text-base text-inherit">Computer 2400</span>
+            </div>
+          </div>
+				</div>
+				
+        @ComputerBoard(bs)
+
+				<div class="flex text-gray-100">
+					<div hx-get={ "/profilewidgets/" + userID } hx-target="this" hx-swap="outerHTML" hx-trigger="load"></div>
+				</div>
+			</div>
+		</div>
+	}
+}
+
+func pieceSide(piece string) Side {
+	if strings.ToLower(piece) == piece {
+		return Black
+	}
+
+	return White
+}
+
+templ clickableSquare(square int, action, gameID string, clases... string) {
+	<div class={ clases } id={ squareToString[square] } name={ action } hx-get={ "/computer/" + gameID }></div>
+}
+
+templ ComputerBoard(bs *BoardState) {
+	<div id="board" class={ "rounded board", templ.KV("flipped", bs != nil && bs.View == Black) } hx-target="#board" hx-swap="outerHTML" hx-trigger="click">
+		for _, square := range bs.Highlighted {
+			<div class={ "highlight", fmt.Sprintf("square-%d", square) }></div>
+		}
+
+		for square, piece := range bs.Pieces {
+			if pieceSide(piece) == bs.View {
+				@clickableSquare(square, "select", bs.GameID, "piece", piece, fmt.Sprintf("square-%d", square))
+			} else {
+				@clickableSquare(square, "unselect", bs.GameID, "piece", piece, fmt.Sprintf("square-%d", square))
+			}
+		}
+
+		for i := 0; i < 64; i++ {
+			if _, ok := bs.Pieces[i]; !ok {
+				@clickableSquare(i, "unselect", bs.GameID, "piece", fmt.Sprintf("square-%d", i))
+			}
+		}
+
+		for square, action := range bs.Moves {
+			@clickableSquare(square, action, bs.GameID, "hint", fmt.Sprintf("square-%d", square))
+		}
+
+		for square, action := range bs.Captures {
+			@clickableSquare(square, action, bs.GameID, "capture-hint", fmt.Sprintf("square-%d", square))
+		}
+  </div>
+}

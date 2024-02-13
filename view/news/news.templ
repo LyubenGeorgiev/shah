@@ -1,0 +1,117 @@
+package news 
+import (
+  "github.com/LyubenGeorgiev/shah/view/layout"
+   "github.com/LyubenGeorgiev/shah/db/models"
+  
+
+)
+
+templ SingleNews(news *models.News) {
+  <a href={templ.URL(news.URL)} class="flex flex-col m-2 bg-gray-800 rounded-lg overflow-hidden shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+    <img src={news.Image} alt="News Image" class="w-full h-48 object-cover"/>
+    <div class="p-4">
+        <h2 class="text-lg font-bold mb-2">{news.Title}</h2>
+        <p class="text-sm">{news.Description}</p>
+    </div>
+  </a>
+}
+
+templ News(newsList []models.News , isAdmin bool) {
+  @layout.Layout("News") {
+    <div class="flex flex-wrap items-start w-full mx-auto bg-gray-900 px-4 py-8 text-gray-400 overflow-y-auto">
+      for _, news := range newsList {
+        @SingleNews(&news)
+      }
+
+      if isAdmin {
+        <a href="/createNews" class="absolute bottom-8 right-8 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">+</a>
+      }
+    </div>
+  }
+}
+
+
+templ CreateNews(){
+    
+    @layout.Layout("News")
+        <style type="text/css">
+/* Reset some default form styles */
+form {
+  margin: 0;
+  padding: 0;
+}
+
+/* Style for form container */
+#register_form {
+  max-width: 400px;
+  margin: 20px auto;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Style for input fields */
+.inputs {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+/* Style for the registration button */
+#regbut {
+  width: 100%;
+  padding: 12px;
+  background-color: #2d3748;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+/* Hover state for the registration button */
+#regbut:hover {
+  background-color: #4a5568;
+}
+
+/* Style for the loading indicator */
+#register-indicator {
+  display: none; /* Hide the indicator by default */
+  margin-top: 10px;
+}
+
+/* Style for the indicator during the loading state */
+#register_form.hx-requesting #register-indicator {
+  display: block;
+}
+
+/* Style for form labels */
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #4a5568;
+}
+
+
+	</style>
+      
+      <form id="news_form"
+           hx-post="/createNews"
+           hx-trigger="submit"
+           enctype="multipart/form-data">
+        <input class="inputs" type="file" name="image"/>
+        <input class="inputs" type="text" name="title" placeholder="Title"/>
+        <textarea class="inputs" name="description" placeholder="Description"></textarea>
+        <input class="inputs" type="url" name="url" placeholder="URL"/>
+        <button  id="regbut" type="submit">Add News</button>
+      </form>
+
+   
+}

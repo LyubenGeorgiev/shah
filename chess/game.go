@@ -79,7 +79,7 @@ func (g *Game) Connect(w http.ResponseWriter, r *http.Request, userID string) er
 
 		g.white.outputs <- Output{Type: "board", Payload: &models.BoardState{
 			Highlighted: nil,
-			Pieces:      g.getPieces(),
+			Pieces:      g.board.GetPieces(),
 			Moves:       nil,
 			Captures:    nil,
 			View:        models.Side(white),
@@ -96,7 +96,7 @@ func (g *Game) Connect(w http.ResponseWriter, r *http.Request, userID string) er
 
 		g.black.outputs <- Output{Type: "board", Payload: &models.BoardState{
 			Highlighted: nil,
-			Pieces:      g.getPieces(),
+			Pieces:      g.board.GetPieces(),
 			Moves:       nil,
 			Captures:    nil,
 			View:        models.Side(black),
@@ -108,7 +108,7 @@ func (g *Game) Connect(w http.ResponseWriter, r *http.Request, userID string) er
 
 func (g *Game) Start() {
 	moves := make(chan Move)
-	for g.board.Gameover() {
+	for !g.board.Gameover() {
 		timer := g.getTimer()
 
 		ctx, cancel := context.WithCancel(context.Background())
@@ -199,14 +199,14 @@ func (g *Game) handleInputEvents(ctx context.Context, moves chan<- Move) {
 
 				UpdateClient(event.Client, Output{Type: "board", Payload: &models.BoardState{
 					Highlighted: highlighted,
-					Pieces:      g.getPieces(),
+					Pieces:      g.board.GetPieces(),
 					Moves:       nil,
 					Captures:    nil,
 					View:        models.Side(event.Client.Side),
 				}})
 			} else if event.Action == "select" {
 				selected = stringToSquare[event.Square]
-				legalMoves = g.board.GetLegalMoves(false).FilterSelected(selected)
+				legalMoves = g.board.GetLegalMoves(false).FilterSelected(int(selected))
 
 				// Highlight selected and last move
 				highlighted := []int{int(stringToSquare[event.Square])}
@@ -228,18 +228,18 @@ func (g *Game) handleInputEvents(ctx context.Context, moves chan<- Move) {
 
 				UpdateClient(event.Client, Output{Type: "board", Payload: &models.BoardState{
 					Highlighted: highlighted,
-					Pieces:      g.getPieces(),
+					Pieces:      g.board.GetPieces(),
 					Moves:       quietMoves,
 					Captures:    captureMoves,
 					View:        models.Side(event.Client.Side),
 				}})
 			} else if event.Action == "move" {
 				target := stringToSquare[event.Square]
-				legalMoves = g.board.GetLegalMoves(false).FilterSelected(selected)
+				legalMoves = g.board.GetLegalMoves(false).FilterSelected(int(selected))
 
 				for i := 0; i < legalMoves.count; i++ {
 					if legalMoves.moves[i].getTarget() == target {
-						g.board.makeMove(legalMoves.moves[i], false)
+						g.board.MakeMove(legalMoves.moves[i], false)
 						g.lastMove = &legalMoves.moves[i]
 						go func(m Move, moves chan<- Move) {
 							moves <- m
@@ -257,7 +257,7 @@ func (g *Game) handleInputEvents(ctx context.Context, moves chan<- Move) {
 
 				UpdateClient(g.white, Output{Type: "board", Payload: &models.BoardState{
 					Highlighted: highlighted,
-					Pieces:      g.getPieces(),
+					Pieces:      g.board.GetPieces(),
 					Moves:       nil,
 					Captures:    nil,
 					View:        models.Side(white),
@@ -265,7 +265,7 @@ func (g *Game) handleInputEvents(ctx context.Context, moves chan<- Move) {
 
 				UpdateClient(g.black, Output{Type: "board", Payload: &models.BoardState{
 					Highlighted: highlighted,
-					Pieces:      g.getPieces(),
+					Pieces:      g.board.GetPieces(),
 					Moves:       nil,
 					Captures:    nil,
 					View:        models.Side(black),
@@ -282,11 +282,11 @@ func (g *Game) handleInputEvents(ctx context.Context, moves chan<- Move) {
 	}
 }
 
-func (g *Game) getPieces() map[int]string {
+func (b *Board) GetPieces() map[int]string {
 	pieces := map[int]string{}
 
 	for bb := P; bb <= k; bb++ {
-		bitboard := g.board.Bitboards[bb]
+		bitboard := b.Bitboards[bb]
 
 		for bitboard > 0 {
 			sourceSquare := square(bitboard.GetLs1bIndex())

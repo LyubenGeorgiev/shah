@@ -88,7 +88,7 @@ func (e *Engine) quiescence(alpha, beta int) int {
 		e.ply++
 
 		// make sure to make only legal moves
-		if !e.makeMove(moves.moves[count], true) {
+		if !e.MakeMove(moves.moves[count], true) {
 			// decrement ply
 			e.ply--
 
@@ -284,7 +284,7 @@ func (e *Engine) negamax(alpha, beta, depth int) int {
 		e.RepetitionTable = append(e.RepetitionTable, e.HashKey)
 
 		// make sure to make only legal moves
-		if !e.makeMove(moves.moves[count], false) {
+		if !e.MakeMove(moves.moves[count], false) {
 			// decrement ply
 			e.ply--
 
@@ -441,7 +441,7 @@ func (e *Engine) searchPosition(depth int) {
 		// Might have bugs if we dont do this!
 		if e.Stopped == 1 {
 			// print best move
-			fmt.Printf("bestmove %s\n", moveToString(safeBestMove))
+			fmt.Printf("bestmove %s\n", MoveToString(safeBestMove))
 			return
 		} else {
 			safeBestMove = e.pv_table[0][0]
@@ -470,5 +470,5 @@ func (e *Engine) searchPosition(depth int) {
 	}
 
 	// print best move
-	fmt.Printf("bestmove %s\n", moveToString(e.pv_table[0][0]))
+	fmt.Printf("bestmove %s\n", MoveToString(e.pv_table[0][0]))
 }

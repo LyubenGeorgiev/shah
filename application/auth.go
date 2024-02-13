@@ -30,7 +30,7 @@ func (a *App) RegistrationFrom(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) Register(w http.ResponseWriter, r *http.Request) {
-	user := &models.User{Rating: 1000, Image: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Windows_10_Default_Profile_Picture.svg/2048px-Windows_10_Default_Profile_Picture.svg.png"}
+	user := &models.User{Rating: 1000, Image: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Windows_10_Default_Profile_Picture.svg/2048px-Windows_10_Default_Profile_Picture.svg.png", Role: "USER"}
 	err := json.NewDecoder(r.Body).Decode(user)
 	if err != nil {
 		fmt.Println(err)
@@ -157,9 +157,37 @@ func (a *App) authMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+func (a *App) adminAndAuthMiddleware(next http.Handler) http.Handler {
+	return a.authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		userID, err := util.GetUserID(r)
+		if err != nil || userID == "" {
+			http.Error(w, "Unknown user!", http.StatusUnauthorized)
+			return
+		}
+
+		user, err := a.Storage.FindByUserID(userID)
+		if err != nil {
+			http.Error(w, "Unknown user!", http.StatusUnauthorized)
+			return
+		}
+
+		next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), "isAdmin", user.Role == "ADMIN" && r.Context().Value("authenticated").(bool))))
+	}))
+}
+
 func (a *App) requiredAuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Context().Value("authenticated").(bool) {
+			next.ServeHTTP(w, r)
+		} else {
+			http.Error(w, "Unauthorized access", http.StatusUnauthorized)
+		}
+	})
+}
+
+func (a *App) requiredAdminRole(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Context().Value("isAdmin").(bool) {
 			next.ServeHTTP(w, r)
 		} else {
 			http.Error(w, "Unauthorized access", http.StatusUnauthorized)
