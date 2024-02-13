@@ -2,7 +2,6 @@ package application
 
 import (
 	"encoding/base64" // For base64 encoding and decoding
-	"fmt"
 	"io" // For reading file content
 	"net/http"
 
@@ -29,7 +28,7 @@ func (a *App) News(w http.ResponseWriter, r *http.Request) {
 
 
 	isAdmin := user.Role == "ADMIN"
-	
+
 	if err != nil {
 		http.Error(w, "Unknown user!", http.StatusNotFound)
 		return
