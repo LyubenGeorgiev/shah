@@ -31,7 +31,9 @@ func (app *App) loadRoutes() {
 	app.router.HandleFunc("/computer", app.Computer).Methods("GET")
 	app.router.HandleFunc("/tournaments", app.Tournaments).Methods("GET")
 	app.router.HandleFunc("/game/{id}", app.Manager.HandleGame).Methods("GET")
-
+	app.router.HandleFunc("/news", app.News).Methods("GET")
+	app.router.HandleFunc("/createNews", app.CreateNews).Methods("GET")
+	app.router.HandleFunc("/createNews", app.NewNews).Methods("POST")
 	app.router.HandleFunc("/replays/{gameID}", app.HandleReplays).Methods("GET")
 	app.router.HandleFunc("/replays/{gameID}/{move}", app.HandleReplaysMove).Methods("GET")
 

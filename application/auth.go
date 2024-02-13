@@ -30,7 +30,7 @@ func (a *App) RegistrationFrom(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) Register(w http.ResponseWriter, r *http.Request) {
-	user := &models.User{Rating: 1000, Image: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Windows_10_Default_Profile_Picture.svg/2048px-Windows_10_Default_Profile_Picture.svg.png"}
+	user := &models.User{Rating: 1000, Image: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Windows_10_Default_Profile_Picture.svg/2048px-Windows_10_Default_Profile_Picture.svg.png", Role: "USER"}
 	err := json.NewDecoder(r.Body).Decode(user)
 	if err != nil {
 		fmt.Println(err)

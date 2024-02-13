@@ -14,4 +14,5 @@ type User struct {
 	GamesPlayed int     `json:"gamesPlayed"`
 	GamesWon    int     `json:"gamesWon"`
 	Image       string  `json:"image"`
+	Role 		string  `json:"role"`
 }

@@ -114,3 +114,17 @@ func (ps *PostgresStorage) GetGame(gameID string) (*models.Game, error) {
 
 	return &game, nil
 }
+
+
+func (ps *PostgresStorage) CreateNews(news *models.News) error {
+	return ps.db.Create(news).Error
+}
+
+
+func (ps *PostgresStorage) GetAllNews() ([]models.News, error) {
+    var newsList []models.News
+    if err := ps.db.Find(&newsList).Error; err != nil {
+        return nil, err
+    }
+    return newsList, nil
+}

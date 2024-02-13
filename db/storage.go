@@ -11,4 +11,6 @@ type Storage interface {
 	FetchUsersByUsername(username string) ([]models.User, error)
 	CreateGame(game *models.Game) error
 	GetGame(gameID string) (*models.Game, error)
+	CreateNews( *models.News) error
+	GetAllNews() ([]models.News, error)
 }
