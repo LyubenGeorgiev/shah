@@ -441,7 +441,7 @@ func (e *Engine) searchPosition(depth int) {
 		// Might have bugs if we dont do this!
 		if e.Stopped == 1 {
 			// print best move
-			fmt.Printf("bestmove %s\n", moveToString(safeBestMove))
+			fmt.Printf("bestmove %s\n", MoveToString(safeBestMove))
 			return
 		} else {
 			safeBestMove = e.pv_table[0][0]
@@ -470,5 +470,5 @@ func (e *Engine) searchPosition(depth int) {
 	}
 
 	// print best move
-	fmt.Printf("bestmove %s\n", moveToString(e.pv_table[0][0]))
+	fmt.Printf("bestmove %s\n", MoveToString(e.pv_table[0][0]))
 }

@@ -1,16 +1,8 @@
 package chess
 
 import (
-	"fmt"
 	"testing"
 )
-
-func (m Move) String() string {
-	return fmt.Sprintf("%v -> %v Piece:%q Promoted:%q Capture:%t Double:%t Enpassant:%t Castling:%t",
-		m.getSource(), m.getTarget(), pieceToChar[m.getPiece()], pieceToChar[m.getPromotionPiece()],
-		m.isCapture(), m.isDoublePawnPush(), m.isEnpassant(), m.isCastling(),
-	)
-}
 
 var nodes uint64 = 0
 var board *Board

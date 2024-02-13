@@ -108,7 +108,7 @@ func (g *Game) Connect(w http.ResponseWriter, r *http.Request, userID string) er
 
 func (g *Game) Start() {
 	moves := make(chan Move)
-	for g.board.Gameover() {
+	for !g.board.Gameover() {
 		timer := g.getTimer()
 
 		ctx, cancel := context.WithCancel(context.Background())
@@ -206,7 +206,7 @@ func (g *Game) handleInputEvents(ctx context.Context, moves chan<- Move) {
 				}})
 			} else if event.Action == "select" {
 				selected = stringToSquare[event.Square]
-				legalMoves = g.board.GetLegalMoves(false).FilterSelected(selected)
+				legalMoves = g.board.GetLegalMoves(false).FilterSelected(int(selected))
 
 				// Highlight selected and last move
 				highlighted := []int{int(stringToSquare[event.Square])}
@@ -235,7 +235,7 @@ func (g *Game) handleInputEvents(ctx context.Context, moves chan<- Move) {
 				}})
 			} else if event.Action == "move" {
 				target := stringToSquare[event.Square]
-				legalMoves = g.board.GetLegalMoves(false).FilterSelected(selected)
+				legalMoves = g.board.GetLegalMoves(false).FilterSelected(int(selected))
 
 				for i := 0; i < legalMoves.count; i++ {
 					if legalMoves.moves[i].getTarget() == target {

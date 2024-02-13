@@ -928,10 +928,10 @@ func (board *Board) GetLegalMoves(capturesOnly bool) *Moves {
 	return &moves
 }
 
-func (m *Moves) FilterSelected(source square) *Moves {
+func (m *Moves) FilterSelected(source int) *Moves {
 	filteredCount := 0
 	for i := 0; i < m.count; i++ {
-		if m.moves[i].getSource() == source {
+		if m.moves[i].getSource() == square(source) {
 			m.moves[filteredCount] = m.moves[i]
 			filteredCount++
 		}
@@ -943,7 +943,7 @@ func (m *Moves) FilterSelected(source square) *Moves {
 }
 
 func (board *Board) Gameover() bool {
-	return board.GetLegalMoves(false).count > 0
+	return board.GetLegalMoves(false).count == 0
 }
 
 func Startpos() Board {

@@ -101,7 +101,7 @@ func (e *Engine) parsePosition(command []byte) {
 
 			// make move on the chess board
 			if !e.Board.MakeMove(move, false) {
-				fmt.Println("Failed at", moveToString(move))
+				fmt.Println("Failed at", MoveToString(move))
 			}
 
 			// move current character mointer to the end of current move
@@ -202,7 +202,7 @@ func (e *Engine) parseGo(command []byte) {
 }
 
 // print move (for UCI purposes)
-func moveToString(move Move) string {
+func MoveToString(move Move) string {
 	if move.getPromotionPiece() != no_piece {
 		return fmt.Sprintf("%s%s%c", squareToString[move.getSource()], squareToString[move.getTarget()], pieceToChar[move.getPromotionPiece()])
 	}
