@@ -2,8 +2,8 @@ package computer
 
 import (
 	"github.com/LyubenGeorgiev/shah/view/layout"
-  "fmt"
-  "strings"
+	"fmt"
+	"strings"
 )
 
 type Side int
@@ -14,12 +14,12 @@ const (
 )
 
 type BoardState struct {
-  GameID      string
+	GameID      string
 	Highlighted []int
 	Pieces      map[int]string
 	Moves       map[int]string
 	Captures    map[int]string
-  View        Side
+	View        Side
 }
 
 var squareToString = [...]string{
@@ -39,15 +39,13 @@ templ Layout(userID string, bs *BoardState) {
 			<div class="flex flex-col">
 				<div class="flex text-gray-100">
 					<div class="h-[calc(min(10vh,10vw))] flex p-2">
-            <div class="flex p-2 h-full w-auto items-center rounded-md bg-gray-700">
-              <img alt="Computer" src="/static/images/computer.svg" class="h-full object-contain"/>
-              <span class="ml-2 text-gray-200 text-base text-inherit">Computer 2400</span>
-            </div>
-          </div>
+						<div class="flex p-2 h-full w-auto items-center rounded-md bg-gray-700">
+							<img alt="Computer" src="/static/images/computer.svg" class="h-full object-contain"/>
+							<span class="ml-2 text-gray-200 text-base text-inherit">Computer 2400</span>
+						</div>
+					</div>
 				</div>
-				
-        @ComputerBoard(bs)
-
+				@ComputerBoard(bs)
 				<div class="flex text-gray-100">
 					<div hx-get={ "/profilewidgets/" + userID } hx-target="this" hx-swap="outerHTML" hx-trigger="load"></div>
 				</div>
@@ -73,7 +71,6 @@ templ ComputerBoard(bs *BoardState) {
 		for _, square := range bs.Highlighted {
 			<div class={ "highlight", fmt.Sprintf("square-%d", square) }></div>
 		}
-
 		for square, piece := range bs.Pieces {
 			if pieceSide(piece) == bs.View {
 				@clickableSquare(square, "select", bs.GameID, "piece", piece, fmt.Sprintf("square-%d", square))
@@ -81,19 +78,16 @@ templ ComputerBoard(bs *BoardState) {
 				@clickableSquare(square, "unselect", bs.GameID, "piece", piece, fmt.Sprintf("square-%d", square))
 			}
 		}
-
 		for i := 0; i < 64; i++ {
 			if _, ok := bs.Pieces[i]; !ok {
 				@clickableSquare(i, "unselect", bs.GameID, "piece", fmt.Sprintf("square-%d", i))
 			}
 		}
-
 		for square, action := range bs.Moves {
 			@clickableSquare(square, action, bs.GameID, "hint", fmt.Sprintf("square-%d", square))
 		}
-
 		for square, action := range bs.Captures {
 			@clickableSquare(square, action, bs.GameID, "capture-hint", fmt.Sprintf("square-%d", square))
 		}
-  </div>
+	</div>
 }

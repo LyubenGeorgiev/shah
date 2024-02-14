@@ -1,115 +1,113 @@
 package nav
 
 import (
-  "github.com/LyubenGeorgiev/shah/view/components"
-  "github.com/LyubenGeorgiev/shah/view/util"
-  "github.com/LyubenGeorgiev/shah/db/models"
-  "fmt"
+	"github.com/LyubenGeorgiev/shah/view/components"
+	"github.com/LyubenGeorgiev/shah/view/util"
+	"github.com/LyubenGeorgiev/shah/db/models"
+	"fmt"
 )
 
 func colorStyles(active bool) string {
-  if active {
-    return "text-gray-200 bg-gray-700"
-  }
+	if active {
+		return "text-gray-200 bg-gray-700"
+	}
 
-  return "hover:bg-gray-700 hover:text-gray-300"
+	return "hover:bg-gray-700 hover:text-gray-300"
 }
 
 templ navbarElement(href, imageSrc, title string, active bool) {
-  <a class={ "flex items-center w-full h-12 px-3 mt-2 rounded", colorStyles(active) } href={ templ.SafeURL(href) }>
-    @components.Image(imageSrc, title, "h-6 w-6")
-    <span class="ml-2 text-m font-medium">{ title }</span>
-  </a>
+	<a class={ "flex items-center w-full h-12 px-3 mt-2 rounded", colorStyles(active) } href={ templ.SafeURL(href) }>
+		@components.Image(imageSrc, title, "h-6 w-6")
+		<span class="ml-2 text-m font-medium">{ title }</span>
+	</a>
 }
 
 templ SearchResults(users []models.User) {
-  for _, user := range users {
-    <li class="">
-      <a href={ templ.SafeURL("/profiles/" + fmt.Sprint(user.ID)) } class="flex items-center">
-        <img alt={ user.Username } src={ user.Image } class="w-5 h-5"/>
-        <span class="">{ user.Username }</span>
-      </a>
-    </li>
-  }
+	for _, user := range users {
+		<li class="">
+			<a href={ templ.SafeURL("/profiles/" + fmt.Sprint(user.ID)) } class="flex items-center">
+				<img alt={ user.Username } src={ user.Image } class="w-5 h-5"/>
+				<span class="">{ user.Username }</span>
+			</a>
+		</li>
+	}
 }
 
 templ Template(active string) {
-  <div class="flex flex-col items-center h-full overflow-hidden text-gray-400 bg-gray-900 border-r-2 border-gray-700">
-    <a class="flex items-center w-full px-3 mt-3" href="/">
-      @components.Image("/static/images/icon.svg", "Icon", "h-8 w-8")
-      <span class="ml-2 text-2xl font-bold">Shah</span>
-    </a>
-
-    <div class="flex flex-col w-full px-2">
-      // Upper part
-      <div class="flex flex-col items-center w-full mt-3 border-t border-gray-700">
-        @navbarElement("/play", "/static/images/play.svg", "Play", active == "Play")
-        @navbarElement("/computer", "/static/images/computer.svg", "Computer", active == "Computer")
-        @navbarElement("/tournaments", "/static/images/tournaments.png", "Tournaments", active == "Tournaments")
-        @navbarElement("/news", "/static/images/news.png", "News", active == "News")
-        if util.IsAdminUser(ctx){
-          @navbarElement("/users", "/static/images/users.png", "Users" , active == "Users")
-        }
-      </div>
-      
-      // Lower part
-      <div class="flex flex-col items-center w-full mt-2 border-t border-gray-700">
-        if util.IsAuthenticatedUser(ctx) {
-          // Messages
-          <a class={ "flex items-center w-full h-12 px-3 mt-2 rounded relative", colorStyles(active == "Messages") } href="/messages">
-            <svg class="w-6 h-6 stroke-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-            </svg>
-            <span class="ml-2 text-m font-medium">Messages</span>
-            <span class="absolute top-0 left-0 w-2 h-2 mt-2 ml-2 bg-indigo-500 rounded-full"></span>
-          </a>
-
-          <input id="search" class="flex w-full h-8 px-2 mt-2 rounded relative bg-gray-800" maxlength="32" name="keyword" placeholder="Search" type="text" hx-get="/search" hx-trigger="keyup changed delay:500ms" hx-target="#search-results" hx-swap="innerHTML"/>
-          <ul id="search-results" class="w-full mt-2"></ul>
-        } else {
-          // Login
-          <a class={ "flex items-center w-full h-12 px-3 mt-2 rounded", colorStyles(active == "Login") } href="/login">
-            <svg class="w-6 h-6 stroke-current" fill="currentColor" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-              <path d="M426.666667 736V597.333333H128v-170.666666h298.666667V288L650.666667 512 426.666667 736M341.333333 85.333333h384a85.333333 85.333333 0 0 1 85.333334 85.333334v682.666666a85.333333 85.333333 0 0 1-85.333334 85.333334H341.333333a85.333333 85.333333 0 0 1-85.333333-85.333334v-170.666666h85.333333v170.666666h384V170.666667H341.333333v170.666666H256V170.666667a85.333333 85.333333 0 0 1 85.333333-85.333334z" fill="" />
-            </svg>
-            <span class="ml-2 text-m font-medium">Login</span>
-          </a>
-
-          // Register
-          <a class={ "flex items-center w-full h-12 px-3 mt-2 rounded", colorStyles(active == "Register") } href="/register">
-            <svg class="w-6 h-6 stroke-current" fill="currentColor" enable-background="new 0 0 512 512" id="Layer_1" version="1.1" viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-              <g>
-                <path stroke-width="15" d="M185.9,272.4c-57.4,0-104.1-46.7-104.1-104.1S128.5,64.2,185.9,64.2S290,110.9,290,168.3   S243.3,272.4,185.9,272.4z M185.9,85.3c-45.8,0-83,37.2-83,83s37.2,83,83,83s83-37.2,83-83S231.7,85.3,185.9,85.3z"/>
-                <path stroke-width="15" d="M361.3,447.8c-5.8,0-10.5-4.7-10.5-10.5c0-90.9-73.9-164.8-164.8-164.8S21.1,346.3,21.1,437.2   c0,5.8-4.7,10.5-10.5,10.5S0,443,0,437.2c0-102.5,83.4-185.9,185.9-185.9s185.9,83.4,185.9,185.9   C371.8,443,367.1,447.8,361.3,447.8z"/>
-                <path stroke-width="15" d="M501.5,239.7H337.8c-5.8,0-10.5-4.7-10.5-10.5s4.7-10.5,10.5-10.5h163.7c5.8,0,10.5,4.7,10.5,10.5   S507.3,239.7,501.5,239.7z"/>
-                <path stroke-width="15" d="M419.6,321.5c-5.8,0-10.5-4.7-10.5-10.5V147.3c0-5.8,4.7-10.5,10.5-10.5c5.8,0,10.5,4.7,10.5,10.5V311   C430.2,316.8,425.4,321.5,419.6,321.5z"/>
-              </g>
-            </svg>
-            <span class="ml-2 text-m font-medium">Register</span>
-          </a>
-        }
-      </div>
-    </div>
-
-    if util.IsAuthenticatedUser(ctx) {
-      <div class="flex flex-col w-full mt-auto">
-        // Logout
-        <a class={ "flex items-center justify-center w-full h-12 rounded", colorStyles(active == "Logout") } href="/logout">
-          <svg class="w-6 h-6 stroke-current" fill="currentColor" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-            <path d="M725.333333 736V597.333333h-298.666666v-170.666666h298.666666V288L949.333333 512 725.333333 736M554.666667 85.333333a85.333333 85.333333 0 0 1 85.333333 85.333334v170.666666h-85.333333V170.666667H170.666667v682.666666h384v-170.666666h85.333333v170.666666a85.333333 85.333333 0 0 1-85.333333 85.333334H170.666667a85.333333 85.333333 0 0 1-85.333334-85.333334V170.666667a85.333333 85.333333 0 0 1 85.333334-85.333334h384z" fill="" />
-          </svg>
-          <span class="ml-2 text-m font-medium">Logout</span>
-        </a>
-        // Account
-        <a class={"flex items-center justify-center w-full h-16",
+	<div class="flex flex-col items-center h-full overflow-hidden text-gray-400 bg-gray-900 border-r-2 border-gray-700">
+		<a class="flex items-center w-full px-3 mt-3" href="/">
+			@components.Image("/static/images/icon.svg", "Icon", "h-8 w-8")
+			<span class="ml-2 text-2xl font-bold">Shah</span>
+		</a>
+		<div class="flex flex-col w-full px-2">
+			// Upper part
+			<div class="flex flex-col items-center w-full mt-3 border-t border-gray-700">
+				@navbarElement("/play", "/static/images/play.svg", "Play", active == "Play")
+				@navbarElement("/computer", "/static/images/computer.svg", "Computer", active == "Computer")
+				@navbarElement("/tournaments", "/static/images/tournaments.png", "Tournaments", active == "Tournaments")
+				@navbarElement("/news", "/static/images/news.png", "News", active == "News")
+				if util.IsAdminUser(ctx) {
+					@navbarElement("/users", "/static/images/users.png", "Users" , active == "Users")
+				}
+			</div>
+			// Lower part
+			<div class="flex flex-col items-center w-full mt-2 border-t border-gray-700">
+				if util.IsAuthenticatedUser(ctx) {
+					// Messages
+					<a class={ "flex items-center w-full h-12 px-3 mt-2 rounded relative", colorStyles(active == "Messages") } href="/messages">
+						<svg class="w-6 h-6 stroke-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+						</svg>
+						<span class="ml-2 text-m font-medium">Messages</span>
+						<span class="absolute top-0 left-0 w-2 h-2 mt-2 ml-2 bg-indigo-500 rounded-full"></span>
+					</a>
+					<input id="search" class="flex w-full h-8 px-2 mt-2 rounded relative bg-gray-800" maxlength="32" name="keyword" placeholder="Search" type="text" hx-get="/search" hx-trigger="keyup changed delay:500ms" hx-target="#search-results" hx-swap="innerHTML"/>
+					<ul id="search-results" class="w-full mt-2"></ul>
+				} else {
+					// Login
+					<a class={ "flex items-center w-full h-12 px-3 mt-2 rounded", colorStyles(active == "Login") } href="/login">
+						<svg class="w-6 h-6 stroke-current" fill="currentColor" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+							<path d="M426.666667 736V597.333333H128v-170.666666h298.666667V288L650.666667 512 426.666667 736M341.333333 85.333333h384a85.333333 85.333333 0 0 1 85.333334 85.333334v682.666666a85.333333 85.333333 0 0 1-85.333334 85.333334H341.333333a85.333333 85.333333 0 0 1-85.333333-85.333334v-170.666666h85.333333v170.666666h384V170.666667H341.333333v170.666666H256V170.666667a85.333333 85.333333 0 0 1 85.333333-85.333334z" fill=""></path>
+						</svg>
+						<span class="ml-2 text-m font-medium">Login</span>
+					</a>
+					// Register
+					<a class={ "flex items-center w-full h-12 px-3 mt-2 rounded", colorStyles(active == "Register") } href="/register">
+						<svg class="w-6 h-6 stroke-current" fill="currentColor" enable-background="new 0 0 512 512" id="Layer_1" version="1.1" viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+							<g>
+								<path stroke-width="15" d="M185.9,272.4c-57.4,0-104.1-46.7-104.1-104.1S128.5,64.2,185.9,64.2S290,110.9,290,168.3   S243.3,272.4,185.9,272.4z M185.9,85.3c-45.8,0-83,37.2-83,83s37.2,83,83,83s83-37.2,83-83S231.7,85.3,185.9,85.3z"></path>
+								<path stroke-width="15" d="M361.3,447.8c-5.8,0-10.5-4.7-10.5-10.5c0-90.9-73.9-164.8-164.8-164.8S21.1,346.3,21.1,437.2   c0,5.8-4.7,10.5-10.5,10.5S0,443,0,437.2c0-102.5,83.4-185.9,185.9-185.9s185.9,83.4,185.9,185.9   C371.8,443,367.1,447.8,361.3,447.8z"></path>
+								<path stroke-width="15" d="M501.5,239.7H337.8c-5.8,0-10.5-4.7-10.5-10.5s4.7-10.5,10.5-10.5h163.7c5.8,0,10.5,4.7,10.5,10.5   S507.3,239.7,501.5,239.7z"></path>
+								<path stroke-width="15" d="M419.6,321.5c-5.8,0-10.5-4.7-10.5-10.5V147.3c0-5.8,4.7-10.5,10.5-10.5c5.8,0,10.5,4.7,10.5,10.5V311   C430.2,316.8,425.4,321.5,419.6,321.5z"></path>
+							</g>
+						</svg>
+						<span class="ml-2 text-m font-medium">Register</span>
+					</a>
+				}
+			</div>
+		</div>
+		if util.IsAuthenticatedUser(ctx) {
+			<div class="flex flex-col w-full mt-auto">
+				// Logout
+				<a class={ "flex items-center justify-center w-full h-12 rounded", colorStyles(active == "Logout") } href="/logout">
+					<svg class="w-6 h-6 stroke-current" fill="currentColor" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+						<path d="M725.333333 736V597.333333h-298.666666v-170.666666h298.666666V288L949.333333 512 725.333333 736M554.666667 85.333333a85.333333 85.333333 0 0 1 85.333333 85.333334v170.666666h-85.333333V170.666667H170.666667v682.666666h384v-170.666666h85.333333v170.666666a85.333333 85.333333 0 0 1-85.333333 85.333334H170.666667a85.333333 85.333333 0 0 1-85.333334-85.333334V170.666667a85.333333 85.333333 0 0 1 85.333334-85.333334h384z" fill=""></path>
+					</svg>
+					<span class="ml-2 text-m font-medium">Logout</span>
+				</a>
+				// Account
+				<a
+					class={ "flex items-center justify-center w-full h-16",
                   templ.KV("bg-gray-800 hover:bg-gray-700 hover:text-gray-300", active != "Account"),
-                  templ.KV("bg-gray-700 hover:text-gray-200", active == "Account") } href="/account">
-          <svg class="w-6 h-6 stroke-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span class="ml-2 text-m font-medium">Account</span>
-        </a>
-      </div>
-    }
-  </div>
+                  templ.KV("bg-gray-700 hover:text-gray-200", active == "Account") }
+					href="/account"
+				>
+					<svg class="w-6 h-6 stroke-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+					</svg>
+					<span class="ml-2 text-m font-medium">Account</span>
+				</a>
+			</div>
+		}
+	</div>
 }
