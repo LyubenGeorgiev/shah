@@ -161,13 +161,13 @@ func (a *App) adminAndAuthMiddleware(next http.Handler) http.Handler {
 	return a.authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		userID, err := util.GetUserID(r)
 		if err != nil || userID == "" {
-			http.Error(w, "Unknown user!", http.StatusUnauthorized)
+			next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), "isAdmin", false)))
 			return
 		}
 
 		user, err := a.Storage.FindByUserID(userID)
 		if err != nil {
-			http.Error(w, "Unknown user!", http.StatusUnauthorized)
+			next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), "isAdmin", false)))
 			return
 		}
 

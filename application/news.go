@@ -6,39 +6,17 @@ import (
 	"net/http"
 
 	"github.com/LyubenGeorgiev/shah/db/models"
-	"github.com/LyubenGeorgiev/shah/util"
 	"github.com/LyubenGeorgiev/shah/view/news"
 )
 
 func (a *App) News(w http.ResponseWriter, r *http.Request) {
-
-	userID, err := util.GetUserID(r)
-
-	if err != nil || userID == "" {
-		http.Error(w, "Unknown user!", http.StatusUnauthorized)
-		return
-	}
-
-	user, err := a.Storage.FindByUserID(userID)
-
-	if err != nil {
-		http.Error(w, "User not found", http.StatusNotFound)
-		return
-	}
-
-	isAdmin := user.Role == "ADMIN"
-
-	if err != nil {
-		http.Error(w, "Unknown user!", http.StatusNotFound)
-		return
-	}
-
 	newsList, err := a.Storage.GetAllNews()
 	if err != nil {
 		http.Error(w, "Failed to retrieve news items", http.StatusInternalServerError)
 		return
 	}
-	news.News(newsList, isAdmin).Render(r.Context(), w)
+
+	news.News(newsList).Render(r.Context(), w)
 }
 
 func (a *App) CreateNews(w http.ResponseWriter, r *http.Request) {

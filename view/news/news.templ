@@ -1,9 +1,8 @@
 package news 
 import (
   "github.com/LyubenGeorgiev/shah/view/layout"
-   "github.com/LyubenGeorgiev/shah/db/models"
-  
-
+  "github.com/LyubenGeorgiev/shah/db/models"
+  "github.com/LyubenGeorgiev/shah/view/util"
 )
 
 templ SingleNews(news *models.News) {
@@ -16,14 +15,14 @@ templ SingleNews(news *models.News) {
   </a>
 }
 
-templ News(newsList []models.News , isAdmin bool) {
+templ News(newsList []models.News) {
   @layout.Layout("News") {
     <div class="flex flex-wrap items-start w-full mx-auto bg-gray-900 px-4 py-8 text-gray-400 overflow-y-auto">
       for _, news := range newsList {
         @SingleNews(&news)
       }
 
-      if isAdmin {
+      if util.IsAdminUser(ctx) {
         <a href="/createNews" class="absolute bottom-8 right-8 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">+</a>
       }
     </div>
