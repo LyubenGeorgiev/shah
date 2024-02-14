@@ -6,7 +6,7 @@ import (
 )
 
 type BoardState struct {
-	Pieces      map[int]string
+	Pieces map[int]string
 }
 
 templ ReplayLayout(bs *BoardState, gameID, ourID, opponentID string, movesPlayed, totalMoves int) {
@@ -20,7 +20,7 @@ templ ReplayLayout(bs *BoardState, gameID, ourID, opponentID string, movesPlayed
 }
 
 templ button(gameID, label string, movesPlayed, newMovesPlayed, limit int) {
-	<button class={"flex p-2 m-1 bg-gray-700 rounded-md text-gray-100 text-base", templ.KV("hover:bg-gray-600", movesPlayed != limit) } hx-get={ fmt.Sprintf("/replays/%s/%d", gameID, newMovesPlayed) } hx-target="#replay" hx-swap="outerHTML" disabled?={ movesPlayed == limit }>{ label }</button>
+	<button class={ "flex p-2 m-1 bg-gray-700 rounded-md text-gray-100 text-base", templ.KV("hover:bg-gray-600", movesPlayed != limit) } hx-get={ fmt.Sprintf("/replays/%s/%d", gameID, newMovesPlayed) } hx-target="#replay" hx-swap="outerHTML" disabled?={ movesPlayed == limit }>{ label }</button>
 }
 
 templ Replay(bs *BoardState, gameID, ourID, opponentID string, movesPlayed, totalMoves int) {

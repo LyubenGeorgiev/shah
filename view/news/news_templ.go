@@ -13,6 +13,7 @@ import "bytes"
 import (
 	"github.com/LyubenGeorgiev/shah/db/models"
 	"github.com/LyubenGeorgiev/shah/view/layout"
+	"github.com/LyubenGeorgiev/shah/view/util"
 )
 
 func SingleNews(news *models.News) templ.Component {
@@ -52,7 +53,7 @@ func SingleNews(news *models.News) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(news.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `news/news.templ`, Line: 12, Col: 54}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `news/news.templ`, Line: 12, Col: 50}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -65,7 +66,7 @@ func SingleNews(news *models.News) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(news.Description)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `news/news.templ`, Line: 13, Col: 44}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `news/news.templ`, Line: 13, Col: 40}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -82,7 +83,7 @@ func SingleNews(news *models.News) templ.Component {
 	})
 }
 
-func News(newsList []models.News, isAdmin bool) templ.Component {
+func News(newsList []models.News) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -111,7 +112,7 @@ func News(newsList []models.News, isAdmin bool) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			if isAdmin {
+			if util.IsAdminUser(ctx) {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"/createNews\" class=\"absolute bottom-8 right-8 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err

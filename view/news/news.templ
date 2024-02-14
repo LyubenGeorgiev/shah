@@ -1,40 +1,37 @@
 package news 
-import (
-  "github.com/LyubenGeorgiev/shah/view/layout"
-   "github.com/LyubenGeorgiev/shah/db/models"
-  
 
+import (
+	"github.com/LyubenGeorgiev/shah/view/layout"
+	"github.com/LyubenGeorgiev/shah/db/models"
+	"github.com/LyubenGeorgiev/shah/view/util"
 )
 
 templ SingleNews(news *models.News) {
-  <a href={templ.URL(news.URL)} class="flex flex-col m-2 bg-gray-800 rounded-lg overflow-hidden shadow-md transition duration-300 ease-in-out transform hover:scale-105">
-    <img src={news.Image} alt="News Image" class="w-full h-48 object-cover"/>
-    <div class="p-4">
-        <h2 class="text-lg font-bold mb-2">{news.Title}</h2>
-        <p class="text-sm">{news.Description}</p>
-    </div>
-  </a>
+	<a href={ templ.URL(news.URL) } class="flex flex-col m-2 bg-gray-800 rounded-lg overflow-hidden shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+		<img src={ news.Image } alt="News Image" class="w-full h-48 object-cover"/>
+		<div class="p-4">
+			<h2 class="text-lg font-bold mb-2">{ news.Title }</h2>
+			<p class="text-sm">{ news.Description }</p>
+		</div>
+	</a>
 }
 
-templ News(newsList []models.News , isAdmin bool) {
-  @layout.Layout("News") {
-    <div class="flex flex-wrap items-start w-full mx-auto bg-gray-900 px-4 py-8 text-gray-400 overflow-y-auto">
-      for _, news := range newsList {
-        @SingleNews(&news)
-      }
-
-      if isAdmin {
-        <a href="/createNews" class="absolute bottom-8 right-8 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">+</a>
-      }
-    </div>
-  }
+templ News(newsList []models.News) {
+	@layout.Layout("News") {
+		<div class="flex flex-wrap items-start w-full mx-auto bg-gray-900 px-4 py-8 text-gray-400 overflow-y-auto">
+			for _, news := range newsList {
+				@SingleNews(&news)
+			}
+			if util.IsAdminUser(ctx) {
+				<a href="/createNews" class="absolute bottom-8 right-8 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">+</a>
+			}
+		</div>
+	}
 }
 
-
-templ CreateNews(){
-    
-    @layout.Layout("News")
-        <style type="text/css">
+templ CreateNews() {
+	@layout.Layout("News")
+	<style type="text/css">
 /* Reset some default form styles */
 form {
   margin: 0;
@@ -101,17 +98,16 @@ label {
 
 
 	</style>
-      
-      <form id="news_form"
-           hx-post="/createNews"
-           hx-trigger="submit"
-           enctype="multipart/form-data">
-        <input class="inputs" type="file" name="image"/>
-        <input class="inputs" type="text" name="title" placeholder="Title"/>
-        <textarea class="inputs" name="description" placeholder="Description"></textarea>
-        <input class="inputs" type="url" name="url" placeholder="URL"/>
-        <button  id="regbut" type="submit">Add News</button>
-      </form>
-
-   
+	<form
+		id="news_form"
+		hx-post="/createNews"
+		hx-trigger="submit"
+		enctype="multipart/form-data"
+	>
+		<input class="inputs" type="file" name="image"/>
+		<input class="inputs" type="text" name="title" placeholder="Title"/>
+		<textarea class="inputs" name="description" placeholder="Description"></textarea>
+		<input class="inputs" type="url" name="url" placeholder="URL"/>
+		<button id="regbut" type="submit">Add News</button>
+	</form>
 }

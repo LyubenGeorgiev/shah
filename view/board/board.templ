@@ -25,14 +25,15 @@ func pieceSide(piece string) models.Side {
 	}
 
 	return models.White
-} 
+}
 
 templ clickableSquare(square int, action string, clases... string) {
-	<div class={ clases }
-		 id={ squareToString[square] }
-		 name={ action }
-		 ws-send>
-	</div>
+	<div
+		class={ clases }
+		id={ squareToString[square] }
+		name={ action }
+		ws-send
+	></div>
 }
 
 templ BoardWebsocket(gameID, ourID, opponentID string) {
@@ -89,7 +90,6 @@ templ Board(bs *models.BoardState) {
 		for _, square := range bs.Highlighted {
 			<div class={ "highlight", fmt.Sprintf("square-%d", square) }></div>
 		}
-
 		for square, piece := range bs.Pieces {
 			if pieceSide(piece) == bs.View {
 				@clickableSquare(square, "select", "piece", piece, fmt.Sprintf("square-%d", square))
@@ -97,17 +97,14 @@ templ Board(bs *models.BoardState) {
 				@clickableSquare(square, "unselect", "piece", piece, fmt.Sprintf("square-%d", square))
 			}
 		}
-
 		for i := 0; i < 64; i++ {
 			if _, ok := bs.Pieces[i]; !ok {
 				@clickableSquare(i, "unselect", "piece", fmt.Sprintf("square-%d", i))
 			}
 		}
-
 		for _, square := range bs.Moves {
 			@clickableSquare(square, "move", "hint", fmt.Sprintf("square-%d", square))
 		}
-
 		for _, square := range bs.Captures {
 			@clickableSquare(square, "move", "capture-hint", fmt.Sprintf("square-%d", square))
 		}

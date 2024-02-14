@@ -1,79 +1,75 @@
 package messages
 
 import (
-  "fmt"
-  "github.com/LyubenGeorgiev/shah/view/layout"
-  "github.com/LyubenGeorgiev/shah/db/models"
+	"fmt"
+	"github.com/LyubenGeorgiev/shah/view/layout"
+	"github.com/LyubenGeorgiev/shah/db/models"
 	"strconv"
 )
 
 templ ShowUserChat(userID uint) {
-  <div class="flex items-center rounded m-2 bg-gray-600 text-gray-100" hx-get={ fmt.Sprintf("/chats/%d", userID) } hx-trigger="click">
-    <div hx-get={ fmt.Sprintf("/profilewidgets/%d", userID) } hx-target="this" hx-swap="outerHTML" hx-trigger="load"></div>
-  </div>
+	<div class="flex items-center rounded m-2 bg-gray-600 text-gray-100" hx-get={ fmt.Sprintf("/chats/%d", userID) } hx-trigger="click">
+		<div hx-get={ fmt.Sprintf("/profilewidgets/%d", userID) } hx-target="this" hx-swap="outerHTML" hx-trigger="load"></div>
+	</div>
 }
 
 templ ShowChats(page int, chatsIDs []uint) {
-  for _, chatID := range chatsIDs {
-    @ShowUserChat(chatID)
-  }
-
-  if len(chatsIDs) > 0 {
-    <div class="flex" hx-get={ fmt.Sprintf("/loadchats/%d", page + 1) } hx-swap="outerHTML" hx-target="this" hx-trigger="intersect once"></div>
-  }
+	for _, chatID := range chatsIDs {
+		@ShowUserChat(chatID)
+	}
+	if len(chatsIDs) > 0 {
+		<div class="flex" hx-get={ fmt.Sprintf("/loadchats/%d", page+1) } hx-swap="outerHTML" hx-target="this" hx-trigger="intersect once"></div>
+	}
 }
 
 templ ShowAllChats(page int, chatsIDs []uint) {
-  for _, chatID := range chatsIDs {
-    @ShowUserChat(chatID)
-  }
-
-  if len(chatsIDs) > 0 {
-    <div class="flex" hx-get={ fmt.Sprintf("/loadallchats/%d", page + 1) } hx-swap="outerHTML" hx-target="this" hx-trigger="intersect once"></div>
-  }
+	for _, chatID := range chatsIDs {
+		@ShowUserChat(chatID)
+	}
+	if len(chatsIDs) > 0 {
+		<div class="flex" hx-get={ fmt.Sprintf("/loadallchats/%d", page+1) } hx-swap="outerHTML" hx-target="this" hx-trigger="intersect once"></div>
+	}
 }
 
 templ Message(message models.Message, toID uint) {
-  <div class={ "flex my-2", templ.KV("justify-start", message.From == toID), templ.KV("justify-end", message.To == toID) }>
-    <div class={ "text-white p-3 rounded-lg max-w-[80%]", templ.KV("bg-blue-500", message.From == toID), templ.KV("bg-green-500", message.To == toID) }>
-      <span class="whitespace-pre-line break-all">{ message.Text }</span>
-    </div>
-  </div>
+	<div class={ "flex my-2", templ.KV("justify-start", message.From == toID), templ.KV("justify-end", message.To == toID) }>
+		<div class={ "text-white p-3 rounded-lg max-w-[80%]", templ.KV("bg-blue-500", message.From == toID), templ.KV("bg-green-500", message.To == toID) }>
+			<span class="whitespace-pre-line break-all">{ message.Text }</span>
+		</div>
+	</div>
 }
 
 func parseUint(id string) uint {
-  res, _ := strconv.ParseUint(id, 10, 64)
-  return uint(res)
+	res, _ := strconv.ParseUint(id, 10, 64)
+	return uint(res)
 }
 
 templ ShowMessages(page int, toID string, messages []models.Message) {
-  for _, msg := range messages {
-    @Message(msg, parseUint(toID))
-  }
-
-  if len(messages) > 0 {
-    <div class="flex" hx-get={ fmt.Sprintf("/messages/%s/%d", toID, page + 1) } hx-swap="outerHTML" hx-target="this" hx-trigger="intersect once"></div>
-  }
+	for _, msg := range messages {
+		@Message(msg, parseUint(toID))
+	}
+	if len(messages) > 0 {
+		<div class="flex" hx-get={ fmt.Sprintf("/messages/%s/%d", toID, page+1) } hx-swap="outerHTML" hx-target="this" hx-trigger="intersect once"></div>
+	}
 }
 
 templ Chat(toID string) {
-  <div id="messages" class="flex overflow-y-auto flex-col-reverse h-full m-2">
-    <div class="flex" hx-get={ fmt.Sprintf("/messages/%s/0", toID) } hx-swap="outerHTML" hx-target="this" hx-trigger="load"></div>
-  </div>
-  <input name="text" hx-ext="json-enc" hx-post={ "/chats/" + toID } hx-target="#chat" hx-swap="innerHTML" type="text" class="w-full h-14 rounded-b bg-gray-600 text-white focus:outline-none"/>
+	<div id="messages" class="flex overflow-y-auto flex-col-reverse h-full m-2">
+		<div class="flex" hx-get={ fmt.Sprintf("/messages/%s/0", toID) } hx-swap="outerHTML" hx-target="this" hx-trigger="load"></div>
+	</div>
+	<input name="text" hx-ext="json-enc" hx-post={ "/chats/" + toID } hx-target="#chat" hx-swap="innerHTML" type="text" class="w-full h-14 rounded-b bg-gray-600 text-white focus:outline-none"/>
 }
 
 templ Layout() {
-  @layout.Layout("Messages") {
-    <div class="flex h-full w-full bg-gray-900">
-      <div class="flex flex-col overflow-y-auto" hx-target="#chat" hx-swap="innerHTML">
-        <div class="flex" hx-get="/loadchats/0" hx-swap="outerHTML" hx-target="this" hx-trigger="load"></div>
-        <div class="flex flex-col border-t border-gray-600">
-          <div class="flex" hx-get="/loadallchats/0" hx-swap="outerHTML" hx-target="this" hx-trigger="load"></div>
-        </div>
-      </div>
-
-      <div id="chat" class="flex flex-col ml-2 w-full h-full bg-gray-700 rounded h-full"></div>
-    </div>
+	@layout.Layout("Messages") {
+		<div class="flex h-full w-full bg-gray-900">
+			<div class="flex flex-col overflow-y-auto" hx-target="#chat" hx-swap="innerHTML">
+				<div class="flex" hx-get="/loadchats/0" hx-swap="outerHTML" hx-target="this" hx-trigger="load"></div>
+				<div class="flex flex-col border-t border-gray-600">
+					<div class="flex" hx-get="/loadallchats/0" hx-swap="outerHTML" hx-target="this" hx-trigger="load"></div>
+				</div>
+			</div>
+			<div id="chat" class="flex flex-col ml-2 w-full h-full bg-gray-700 rounded h-full"></div>
+		</div>
 	}
 }
