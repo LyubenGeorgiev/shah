@@ -185,7 +185,12 @@ func (ps *PostgresStorage) DeleteUserByID(userID uint) error {
 		return err
 	}
 
-	return ps.db.Where("\"from\" = ?", userID).Or("\"to\" = ?", userID).Delete(&models.Chat{}).Error
+	// Clear recent chats of the user
+	if err := ps.db.Where("\"from\" = ?", userID).Or("\"to\" = ?", userID).Delete(&models.Chat{}).Error; err != nil {
+		return err
+	}
+
+	return ps.db.Where("\"white_id\" = ?", userID).Or("\"black_id\" = ?", userID).Delete(&models.Game{}).Error
 }
 
 func (ps *PostgresStorage) UpdateUser(userID uint, role string) error {
