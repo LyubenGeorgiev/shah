@@ -184,7 +184,8 @@ func (ps *PostgresStorage) DeleteUserByID(userID uint) error {
 	if err := ps.db.Delete(&models.User{}, userID).Error; err != nil {
 		return err
 	}
-	return nil
+
+	return ps.db.Where("\"from\" = ?", userID).Or("\"to\" = ?", userID).Delete(&models.Chat{}).Error
 }
 
 func (ps *PostgresStorage) UpdateUser(userID uint, role string) error {
