@@ -1,40 +1,60 @@
-## Workflows
+# Shah Chess Web App
+
+Shah is a Golang web application for playing chess with complete server-side rendering. It offers features for playing against an opponent or a computer, incorporating cookie-based authentication with options for Login, Register, and Logout functionalities. The application includes a match history section within user accounts, as well as chat for live game communication using WebSockets and another chat for the chat section.
+
+## Features
+
+- Play chess against opponents or the computer.
+- Complete server-side rendering.
+- User authentication with Login, Register, and Logout functionalities.
+- Match history tracking in the account section.
+- Real-time chat and games using WebSockets.
+- Admin panel for users with ADMIN role, allowing editing of user profiles.
+- Picture uploading feature in the account section.
+- News section with the latest chess updates, editable by admins.
+
+## Technologies Used
+
+- **Backend**: Golang
+- **Frontend**: HTMX, Templ
+- **Authentication**: Cookie-based
+- **Game + Chat**: WebSockets
+- **CI/CD Pipeline**: GitHub Actions
+
+## Getting Started
+
+To start the project, run the following command:
+
+```bash
+docker compose up --build
+```
+
+This will build and run the Docker containers required for the application.
+
+## Chess Engine
+The project includes a custom chess engine written in Golang, boasting a strength of around 2400 Elo. It is inspired by the [Chess Programming](https://www.youtube.com/@chessprogramming591) bitboard chess engine [series](https://www.youtube.com/playlist?list=PLmN0neTso3Jxh8ZIylk74JpwfiWNI76Cs)
+
+## DevOps Pipeline
+
+The project features a comprehensive CI/CD pipeline managed through GitHub Actions. The pipeline includes:
 
 ### Dev Pipeline
 
-This workflow is triggered on pushes to branches other than the `main` branch.
-
-#### Job: `gosec`
-- **Description**: Runs the Gosec Security Scanner on the codebase
-  
-#### Job: `gitleaks`
-- **Description**: Executes Gitleaks to check for sensitive information leakage.
-  
-#### Job: `test`
-- **Description**: Runs tests after security checks.
-- **Dependencies**: Depends on the completion of `gosec` and `gitleaks` jobs.
-  
-#### Job: `build`
-- **Description**: Builds Docker images, scans for vulnerabilities using Trivy
-- **Dependencies**: Depends on the completion of the `test` job.
+- gosec: Runs the Gosec Security Scanner on the codebase.
+- gitleaks: Executes Gitleaks to check for sensitive information leakage.
+- test: Runs tests after security checks.
+- build: Builds Docker images, scans for vulnerabilities using Trivy.
 
 ### Main Pipeline
 
-This workflow is triggered on pushes to the `main` branch.
+- gosec, gitleaks, test: Similar jobs as in the Dev Pipeline, executing security checks and testing.
+- build: Builds Docker images, scans for vulnerabilities using Trivy, and uploads to Docker Hub.
+- trigger-infra: Triggers deployment workflow in the [shah-infra](https://github.com/LyubenGeorgiev/shah-infra) repository after successful build and push to Docker Hub.
 
-#### Jobs: `gosec`, `gitleaks`, `test`
-- **Description**: Similar jobs as defined in the `Dev Pipeline`, executing security checks, testing.
+## Contributing
 
-#### Job: `build`
-- **Description**: Builds Docker images, scans for vulnerabilities using Trivy. If successful uploads it to https://hub.docker.com/repository/docker/lyubengeorgiev/shah
-- **Dependencies**: Depends on the completion of the `test` job.
-  
-#### Job: `trigger-infra`
-- **Description**: Triggers deployment workflow in the 'shah-infra' repository after successful build and push to dockerhub.
-- **Dependencies**: Depends on the completion of the `build` job.
+Contributions are welcome! Feel free to open issues for feature requests or bug reports. Pull requests are also appreciated
 
-### Pipeline Overview
+## License
 
-These workflows automate the CI/CD processes, including code quality checks, security scans, Docker image building, vulnerability scanning, and deployment triggers. The `Dev Pipeline` focuses on feature branch development, while the `Main Pipeline` ensures the `main` branch's integrity and triggers deployments.
-
-For more details about each job and workflow configurations, refer to the corresponding workflow YAML files in this repository.
+This project is licensed under the [MIT License](LICENSE)
